@@ -10,3 +10,4 @@ obj/
 *.msi
 *.Cache
 TestResults/*
+!Ionic.Zlib.dll
