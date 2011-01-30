@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Reflection;
+using mcsharpbot.bots;
 
 namespace mcsharpbot.ui
 {
@@ -14,6 +16,19 @@ namespace mcsharpbot.ui
         public MCSharpBotManager()
         {
             InitializeComponent();
+            
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            bot = new bots.SimpleBot();
+            bot.Start(textBox1.Text, textBox2.Text, textBox3.Text, int.Parse(textBox4.Text));
+        }
+        private bots.SimpleBot bot;
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            bot.Stop();
         }
     }
 }

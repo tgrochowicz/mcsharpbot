@@ -1,5 +1,0 @@
-C:\Users\Robert\git\mcsharpbot\mcsharpbot\bin\Debug\mcsharpbot.dll
-C:\Users\Robert\git\mcsharpbot\mcsharpbot\bin\Debug\mcsharpbot.pdb
-C:\Users\Robert\git\mcsharpbot\mcsharpbot\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Robert\git\mcsharpbot\mcsharpbot\obj\Debug\mcsharpbot.dll
-C:\Users\Robert\git\mcsharpbot\mcsharpbot\obj\Debug\mcsharpbot.pdb

@@ -1,8 +1,0 @@
-C:\Users\Robert\git\mcsharpbot\mcsharpbot.ui\bin\Debug\mcsharpbot.ui.exe
-C:\Users\Robert\git\mcsharpbot\mcsharpbot.ui\bin\Debug\mcsharpbot.ui.pdb
-C:\Users\Robert\git\mcsharpbot\mcsharpbot.ui\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\Robert\git\mcsharpbot\mcsharpbot.ui\obj\x86\Debug\mcsharpbot.ui.Properties.Resources.resources
-C:\Users\Robert\git\mcsharpbot\mcsharpbot.ui\obj\x86\Debug\GenerateResource.read.1.tlog
-C:\Users\Robert\git\mcsharpbot\mcsharpbot.ui\obj\x86\Debug\GenerateResource.write.1.tlog
-C:\Users\Robert\git\mcsharpbot\mcsharpbot.ui\obj\x86\Debug\mcsharpbot.ui.exe
-C:\Users\Robert\git\mcsharpbot\mcsharpbot.ui\obj\x86\Debug\mcsharpbot.ui.pdb
