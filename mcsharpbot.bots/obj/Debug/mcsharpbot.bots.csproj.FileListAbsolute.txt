@@ -1,0 +1,5 @@
+C:\Users\Robert\git\mcsharpbot\mcsharpbot.bots\bin\Debug\mcsharpbot.bots.dll
+C:\Users\Robert\git\mcsharpbot\mcsharpbot.bots\bin\Debug\mcsharpbot.bots.pdb
+C:\Users\Robert\git\mcsharpbot\mcsharpbot.bots\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Robert\git\mcsharpbot\mcsharpbot.bots\obj\Debug\mcsharpbot.bots.dll
+C:\Users\Robert\git\mcsharpbot\mcsharpbot.bots\obj\Debug\mcsharpbot.bots.pdb
