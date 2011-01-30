@@ -45,6 +45,7 @@
             this.cmbBotTypes = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lbFeedback = new System.Windows.Forms.ListBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -140,6 +141,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.txtUserName);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.txtPassword);
@@ -150,7 +152,7 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(529, 76);
+            this.groupBox1.Size = new System.Drawing.Size(529, 89);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Server Information";
@@ -171,7 +173,7 @@
             this.tlpBotProperties.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tlpBotProperties.ColumnCount = 2;
             this.tlpBotProperties.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpBotProperties.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 318F));
+            this.tlpBotProperties.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 319F));
             this.tlpBotProperties.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpBotProperties.Location = new System.Drawing.Point(3, 16);
             this.tlpBotProperties.Name = "tlpBotProperties";
@@ -218,6 +220,16 @@
             this.lbFeedback.Size = new System.Drawing.Size(520, 68);
             this.lbFeedback.TabIndex = 0;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(275, 66);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(94, 17);
+            this.checkBox1.TabIndex = 10;
+            this.checkBox1.Text = "Authentication";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // MCSharpBotManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -261,5 +273,6 @@
         private System.Windows.Forms.TableLayoutPanel tlpBotProperties;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.ListBox lbFeedback;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

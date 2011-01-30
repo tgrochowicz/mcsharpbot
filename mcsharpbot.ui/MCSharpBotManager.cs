@@ -29,7 +29,7 @@ namespace mcsharpbot.ui
             groupBox4.Enabled = false;
 
             bot.BotFeedbackReceived += new MCBotBase.BotFeedbackEventHandler(bot_BotFeedbackReceived);
-            bot.Start(txtUserName.Text, txtPassword.Text, txtServerAddress.Text, int.Parse(txtServerPort.Text));
+            bot.Start(txtUserName.Text, txtPassword.Text, txtServerAddress.Text, int.Parse(txtServerPort.Text), checkBox1.Checked);
         }
 
         void bot_BotFeedbackReceived(object sender, BotFeedbackEventArgs args)

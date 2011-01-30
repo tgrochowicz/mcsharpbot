@@ -13,7 +13,7 @@ namespace mcsharpbot.bots
         {
             Running = false;
         }
-        public void Start(string username, string password, string servername, int port)
+        public void Start(string username, string password, string servername, int port, bool auth)
         {
             //Create server
             System.Net.IPAddress addr;
@@ -31,7 +31,7 @@ namespace mcsharpbot.bots
                 username = System.Web.HttpUtility.UrlEncode(username);
                 password = System.Web.HttpUtility.UrlEncode(password);
                 _connection = new MCServerConnection(username, password, new System.Net.IPEndPoint(addr, port));
-                //_connection.UseAuthentication = true;
+                _connection.UseAuthentication = auth;
                 //log in
                 _connection.Connect();
                 BeginAction();
