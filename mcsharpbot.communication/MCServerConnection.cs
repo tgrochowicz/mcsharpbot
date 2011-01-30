@@ -152,8 +152,13 @@ namespace mcsharpbot.communication
                                     Chat chatPacket = new Chat();
                                     chatPacket.Read(Stream);
                                     string chatMsg = chatPacket.Message;
-                                    string[] chatMsgSplit = chatMsg.Split(new char[] { '>', ':' });
-                                    OnChatMessageReceived(this, new MinecraftClientChatEventArgs(chatMsgSplit[0].Trim('<'), chatMsgSplit[1]));
+                                    string[] chatMsgSplit = chatMsg.Split(new char[] { '>', ']' });
+                                    string chatUsername = chatMsgSplit[0].Trim('<', '[');
+                                    if (this.Username == chatUsername)
+                                    {
+                                        break;
+                                    }
+                                    OnChatMessageReceived(this, new MinecraftClientChatEventArgs(chatUsername, chatMsgSplit[1]));
                                 }
                                 catch (IndexOutOfRangeException e) { }
                                 break;
