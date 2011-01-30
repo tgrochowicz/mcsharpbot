@@ -5,6 +5,7 @@ using System.Text;
 using System.Net.Sockets;
 using System.IO;
 using System.IO.Compression;
+using Ionic.Zlib;
 
 namespace mcsharpbot.communication.Packets.Types
 {
@@ -37,15 +38,14 @@ namespace mcsharpbot.communication.Packets.Types
             buffer = StreamHelper.ReadBytes(stream, i);
             Chunk = new byte[(XSize * YSize * ZSize * 5) / 2];
 
-            MemoryStream ms = new MemoryStream();
-            using(GZipStream zip = new GZipStream(ms, CompressionMode.Decompress, true))
+            using (Stream file = new MemoryStream(buffer))
+            using (Stream gzip = new Ionic.Zlib.ZlibStream(file, Ionic.Zlib.CompressionMode.Decompress))
+            using (MemoryStream memoryStream = new MemoryStream())
             {
-                zip.Write(buffer, 0, buffer.Length);
-                zip.Flush();
+                CopyStream(gzip, memoryStream);
+                Chunk = memoryStream.ToArray();
             }
 
-            ms.Position = 0;
-            Chunk = ms.ToArray();
 
         }
 
@@ -63,6 +63,16 @@ namespace mcsharpbot.communication.Packets.Types
             stream.Write(Chunk, 0, Chunk.Length);
 
             stream.Flush();
+        }
+
+        static void CopyStream(Stream input, Stream output)
+        {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write(buffer, 0, bytesRead);
+            }
         }
     }
 }

@@ -5,6 +5,8 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using mcsharpbot.communication.Packets;
+using mcsharpbot.communication.Packets.Types;
 
 namespace mcsharpbot.communication
 {
@@ -130,6 +132,7 @@ namespace mcsharpbot.communication
         private void HandleData()
         {
             byte id;
+            PacketType type;
 
             try
             {
@@ -137,137 +140,216 @@ namespace mcsharpbot.communication
                 {
                     try
                     {
-                        switch (id)
+                        type = (PacketType)id;
+                        switch (type)
                         {
-                            case 0x00: //Ping
+                            case PacketType.Ping: //Ping
                                 Stream.WriteByte(0x00);
                                 break;
-                            case 0x03: //Chat
+                            case PacketType.Chat: //Chat
                                 try
                                 {
-                                    String s = StreamHelper.ReadString(Stream);
-                                    if (s[0] != '<') break;
-                                    String user = s.Substring(1, s.IndexOf(">") - 1);
-                                    String msg = s.Replace("<" + user + "> ", "");
-                                    OnChatMessageReceived(this, new MinecraftClientChatEventArgs(user, msg));
+                                    Chat chatPacket = new Chat();
+                                    chatPacket.Read(Stream);
+                                    string chatMsg = chatPacket.Message;
+                                    string[] chatMsgSplit = chatMsg.Split(new char[] { '>', ':' });
+                                    OnChatMessageReceived(this, new MinecraftClientChatEventArgs(chatMsgSplit[0].Trim('<'), chatMsgSplit[1]));
                                 }
                                 catch (IndexOutOfRangeException e) { }
                                 break;
-                            case 0x04:
-                                this.Server.Time = StreamHelper.ReadLong(Stream);
+                            case PacketType.UpdateTime:
+                                UpdateTime updateTimePacket = new UpdateTime();
+                                updateTimePacket.Read(Stream);
+                                this.Server.Time = updateTimePacket.Time;
                                 break;
-                            case 0x05: StreamHelper.ReadBytes(Stream, 10); break;
-                            case 0x06: StreamHelper.ReadBytes(Stream, 12); break;
-                            case 0x07: StreamHelper.ReadBytes(Stream, 9); break;
-                            case 0x08: StreamHelper.ReadBytes(Stream, 2); break;
-                            case 0x09: break;
-                            case 0x0A: StreamHelper.ReadBytes(Stream, 1); break;
-                            case 0x0B: StreamHelper.ReadBytes(Stream, 33); break;
-                            case 0x0C: StreamHelper.ReadBytes(Stream, 9); break;
-                            case 0x0D:
-                                this.PlayerLocation.X = StreamHelper.ReadDouble(Stream);
-                                this.PlayerLocation.Y = StreamHelper.ReadDouble(Stream);
-                                this.PlayerLocation.Stance = StreamHelper.ReadDouble(Stream);
-                                this.PlayerLocation.Z = StreamHelper.ReadDouble(Stream);
-                                this.PlayerRotation.Pitch = StreamHelper.ReadFloat(Stream);
-                                this.PlayerRotation.Yaw = StreamHelper.ReadFloat(Stream);
-                                this.OnGround = StreamHelper.ReadBoolean(Stream);
+                            case PacketType.PlayerInventory:
+                                PlayerInventory playerInventoryPacket = new PlayerInventory();
+                                playerInventoryPacket.Read(Stream);
+                                break;
+                            case PacketType.SpawnPosition:
+                                SpawnPosition spawnPositionPacket = new SpawnPosition();
+                                spawnPositionPacket.Read(Stream);
+                                break;
+                            case PacketType.Use:
+                                Use usePacket = new Use();
+                                usePacket.Read(Stream);
+                                break;
+                            case PacketType.Health:
+                                Health healthPacket = new Health();
+                                healthPacket.Read(Stream);
+                                break;
+                            case PacketType.Respawn:
+                                Respawn respawnPacket = new Respawn();
+                                respawnPacket.Read(Stream);
+                                break;
+                            case PacketType.Flying:
+                                Flying flyingPacket = new Flying();
+                                flyingPacket.Read(Stream);
+                                break;
+                            case PacketType.PlayerPosition:
+                                PlayerPosition playerPositionPacket = new PlayerPosition();
+                                playerPositionPacket.Read(Stream);
+                                break;
+                            case PacketType.PlayerLook:
+                                PlayerLook playerLookPacket = new PlayerLook();
+                                playerLookPacket.Read(Stream);
+                                break;
+                            case PacketType.PlayerLookMove:
+                                PlayerLookMove playerLookMovePacket = new PlayerLookMove();
+                                playerLookMovePacket.Read(Stream);
+                                this.PlayerLocation.X = playerLookMovePacket.X;
+                                this.PlayerLocation.Y = playerLookMovePacket.Y;
+                                this.PlayerLocation.Stance = playerLookMovePacket.Stance;
+                                this.PlayerLocation.Z = playerLookMovePacket.Z;
+                                this.PlayerRotation.Pitch = playerLookMovePacket.Pitch;
+                                this.PlayerRotation.Yaw = playerLookMovePacket.Yaw;
+                                this.OnGround = playerLookMovePacket.OnGround;
                                 OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));
                                 break;
-                            case 0x0E: StreamHelper.ReadBytes(Stream, 11); break;
-                            case 0x0F:
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadBytes(Stream, 1);
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadBytes(Stream, 1);
-                                short itemid = StreamHelper.ReadShort(Stream);
-                                if (itemid > 0)
-                                {
-                                    byte amount = StreamHelper.ReadBytes(Stream, 1)[0];
-                                    short damage = StreamHelper.ReadShort(Stream);
-                                }
+                            case PacketType.BlockDig:
+                                BlockDig blockDigPacket = new BlockDig();
+                                blockDigPacket.Read(Stream);
                                 break;
-                            case 0x10: StreamHelper.ReadBytes(Stream, 2); break;
-                            case 0x12: StreamHelper.ReadBytes(Stream, 5); break;
-                            case 0x13: StreamHelper.ReadBytes(Stream, 5); break;
-                            case 0x14:
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadString(Stream);
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadBytes(Stream, 2);
-                                StreamHelper.ReadShort(Stream);
+                            case PacketType.Place:
+                                Place placePacket = new Place();
+                                placePacket.Read(Stream);
                                 break;
-                            case 0x15: StreamHelper.ReadBytes(Stream, 24); break;
-                            case 0x16: StreamHelper.ReadBytes(Stream, 8); break;
-                            case 0x17: StreamHelper.ReadBytes(Stream, 17); break;
-                            case 0x18:
-                                StreamHelper.ReadBytes(Stream, 19);
+                            case PacketType.BlockItemSwitch:
+                                BlockItemSwitch blockItemSwitchPacket = new BlockItemSwitch();
+                                blockItemSwitchPacket.Read(Stream);
+                                break;
+                            case PacketType.ArmAnimation:
+                                ArmAnimation armAnimationPacket = new ArmAnimation();
+                                armAnimationPacket.Read(Stream);
+                                break;
+                            case PacketType.Action:
+                                Packets.Types.Action actionPacket = new Packets.Types.Action();
+                                actionPacket.Read(Stream);
+                                break;
+                            case PacketType.NamedEntitySpawn:
+                                NamedEntitySpawn namedEntitySpawnPacket = new NamedEntitySpawn();
+                                namedEntitySpawnPacket.Read(Stream);
+                                break;
+                            case PacketType.PickupSpawn:
+                                PickupSpawn pickupSpawnPacket = new PickupSpawn();
+                                pickupSpawnPacket.Read(Stream);
+                                break;
+                            case PacketType.Collect:
+                                Collect collectPacket = new Collect();
+                                collectPacket.Read(Stream);
+                                break;
+                            case PacketType.VehicleSpawn:
+                                VehicleSpawn vehicleSpawnPacket = new VehicleSpawn();
+                                vehicleSpawnPacket.Read(Stream);
+                                break;
+                            case PacketType.MobSpawn:
+                                MobSpawn mobSpawnPacket = new MobSpawn();
+                                mobSpawnPacket.Read(Stream);
+                                break;
+                            case PacketType.Painting:
+                                Painting paintingPacket = new Painting();
+                                paintingPacket.Read(Stream);
+                                break;
+                            case PacketType.Velocity:
+                                Velocity velocityPacket = new Velocity();
+                                velocityPacket.Read(Stream);
+                                break;
+                            case PacketType.DestroyEntity:
+                                DestroyEntity destroyEntityPacket = new DestroyEntity();
+                                destroyEntityPacket.Read(Stream);
+                                break;
+                            case PacketType.Entity:
+                                Entity entityPacket = new Entity();
+                                entityPacket.Read(Stream);
+                                break;
+                            case PacketType.EntityPosition:
+                                EntityPosition entityPositionPacket = new EntityPosition();
+                                entityPositionPacket.Read(Stream);
+                                break;
+                            case PacketType.EntityLook:
+                                EntityLook entityLookPacket = new EntityLook();
+                                entityLookPacket.Read(Stream);
+                                break;
+                            case PacketType.EntityLookMove:
+                                EntityLookMove entityLookMovePacket = new EntityLookMove();
+                                entityLookMovePacket.Read(Stream);
+                                break;
+                            case PacketType.EntityTeleport:
+                                EntityTeleport entityTeleportPacket = new EntityTeleport();
+                                entityTeleportPacket.Read(Stream);
+                                break;
+                            case PacketType.Status:
+                                Status statusPacket = new Status();
+                                statusPacket.Read(Stream);
+                                break;
+                            case PacketType.VehicleAttach:
+                                VehicleAttach vehicleAttachPacket = new VehicleAttach();
+                                vehicleAttachPacket.Read(Stream);
+                                break;
+                            /*case 0x28:
+                                StreamHelper.ReadInt(Stream);
                                 while ((id = (byte)Stream.ReadByte()) != 0x7f) { } //Metadata
+                                break;*/
+                            case PacketType.PreChunk:
+                                PreChunk preChunkPacket = new PreChunk();
+                                preChunkPacket.Read(Stream);
                                 break;
-                            case 0x19:
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadString(Stream);
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadInt(Stream);
+                            case PacketType.MapChunk:
+                                MapChunk mapChunkPacket = new MapChunk();
+                                mapChunkPacket.Read(Stream);
                                 break;
-                            case 0x1C: StreamHelper.ReadBytes(Stream, 10); break;
-                            case 0x1D: StreamHelper.ReadBytes(Stream, 4); break;
-                            case 0x1E: StreamHelper.ReadBytes(Stream, 4); break;
-                            case 0x1F: StreamHelper.ReadBytes(Stream, 7); break;
-                            case 0x20: StreamHelper.ReadBytes(Stream, 6); break;
-                            case 0x21: StreamHelper.ReadBytes(Stream, 9); break;
-                            case 0x22: StreamHelper.ReadBytes(Stream, 18); break;
-                            case 0x26: StreamHelper.ReadBytes(Stream, 5); break;
-                            case 0x27: StreamHelper.ReadBytes(Stream, 8); break;
-                            case 0x28:
-                                StreamHelper.ReadInt(Stream);
-                                while ((id = (byte)Stream.ReadByte()) != 0x7f) { } //Metadata
+                            case PacketType.MultiBlockChange:
+                                MultiBlockChange multiBlockChangePacket = new MultiBlockChange();
+                                multiBlockChangePacket.Read(Stream);
                                 break;
-                            case 0x32: StreamHelper.ReadBytes(Stream, 9); break;
-                            case 0x33:
-                                StreamHelper.ReadBytes(Stream, 13);
-                                int size = StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadBytes(Stream, size);
+                            case PacketType.BlockChange:
+                                BlockChange blockChangePacket = new BlockChange();
+                                blockChangePacket.Read(Stream);
                                 break;
-                            case 0x34:
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadInt(Stream);
-                                short length = StreamHelper.ReadShort(Stream); //byte array length
-                                StreamHelper.ReadBytes(Stream, length * 2); //3 byte arrays
-                                while ((id = (byte)Stream.ReadByte()) != 0x7f) { } //Metadata
+                            case PacketType.Note:
+                                Note notePacket = new Note();
+                                notePacket.Read(Stream);
                                 break;
-                            case 0x35: StreamHelper.ReadBytes(Stream, 11); break;
-                            case 0x3C:
-                                StreamHelper.ReadDouble(Stream);
-                                StreamHelper.ReadDouble(Stream);
-                                StreamHelper.ReadDouble(Stream);
-                                StreamHelper.ReadFloat(Stream);
-                                int count = StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadBytes(Stream, count * 3);
+                            case PacketType.Explosion:
+                                Explosion explosionPacket = new Explosion();
+                                explosionPacket.Read(Stream);
                                 break;
-                            case 0x64: StreamHelper.ReadBytes(Stream, 3); break;
-                            case 0x65: StreamHelper.ReadBytes(Stream, 1); break;
-                            case 0x66: StreamHelper.ReadBytes(Stream, 8); break;
-                            case 0x67: StreamHelper.ReadBytes(Stream, 5); break;
-                            case 0x68: StreamHelper.ReadBytes(Stream, 3); break;
-                            case 0x69: StreamHelper.ReadBytes(Stream, 5); break;
-                            case 0x6A: StreamHelper.ReadBytes(Stream, 4); break;
-                            case 0x82:
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadShort(Stream);
-                                StreamHelper.ReadInt(Stream);
-                                StreamHelper.ReadString(Stream);
-                                StreamHelper.ReadString(Stream);
-                                StreamHelper.ReadString(Stream);
+                            case PacketType.WindowOpen:
+                                WindowOpen windowOpenPacket = new WindowOpen();
+                                windowOpenPacket.Read(Stream);
                                 break;
-                            case 0xFF:
-                                String reason = StreamHelper.ReadString(Stream);
-                                if (reason.Length < 5) break;
-                                Debug.Warning("Received disconnect packet. Reason: " + reason);
+                            case PacketType.WindowClose:
+                                WindowClose windowClosePacket = new WindowClose();
+                                windowClosePacket.Read(Stream);
+                                break;
+                            case PacketType.WindowAction:
+                                WindowAction windowActionPacket = new WindowAction();
+                                windowActionPacket.Read(Stream);
+                                break;
+                            case PacketType.WindowSlot:
+                                WindowSlot windowSlotPacket = new WindowSlot();
+                                windowSlotPacket.Read(Stream);
+                                break;
+                            case PacketType.Inventory:
+                                Inventory inventoryPacket = new Inventory();
+                                inventoryPacket.Read(Stream);
+                                break;
+                            case PacketType.WindowProgress:
+                                WindowProgress windowProgressPacket = new WindowProgress();
+                                windowProgressPacket.Read(Stream);
+                                break;
+                            case PacketType.WindowToken:
+                                WindowToken windowTokenPacket = new WindowToken();
+                                windowTokenPacket.Read(Stream);
+                                break;
+                            case PacketType.Sign:
+                                Sign signPacket = new Sign();
+                                signPacket.Read(Stream);
+                                break;
+                            case PacketType.Quit:
+                                Quit quitPacket = new Quit();
+                                quitPacket.Read(Stream);
+                                Debug.Warning("Received disconnect packet. Reason: " + quitPacket.Reason);
                                 break;
                             default:
                                 //Debug.Warning("Unknown packet received. [" + (int)id + "]");
@@ -277,7 +359,7 @@ namespace mcsharpbot.communication
                     catch (Exception e) { Debug.Warning(e); }
                 }
             }
-            catch (Exception e) { Debug.Severe(new MinecraftClientGeneralException(e)); }
+            catch (Exception e) { Debug.Severe(new MinecraftClientGeneralException(e)); throw e; }
 
             Connected = false;
 
@@ -363,13 +445,11 @@ namespace mcsharpbot.communication
                 }
                 Packets.Types.Login serverLogin = new Packets.Types.Login();
                 serverLogin.Read(this.Stream);
+
                 this.EntityID = serverLogin.Version;
                 this.Server.ServerName = serverLogin.Username;
                 this.Server.ServerMOTD = serverLogin.ServerPassword;
                 this.Server.MapSeed = serverLogin.MapSeed;
-
-                //this.Stream.WriteByte(0x00);
-                //this.Stream.Flush();
 
                 return true;
             }
@@ -417,6 +497,11 @@ namespace mcsharpbot.communication
         public MinecraftServer GetServer()
         {
             return this.Server;
+        }
+
+        public void SendPacket(IPacket packet)
+        {
+            packet.Write(Stream);
         }
 
         public void Dispose()
