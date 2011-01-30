@@ -3,3 +3,8 @@ C:\Users\Robert\git\mcsharpbot\mcsharpbot.communication\bin\Debug\mcsharpbot.com
 C:\Users\Robert\git\mcsharpbot\mcsharpbot.communication\bin\Debug\mcsharpbot.communication.pdb
 C:\Users\Robert\git\mcsharpbot\mcsharpbot.communication\obj\Debug\mcsharpbot.communication.dll
 C:\Users\Robert\git\mcsharpbot\mcsharpbot.communication\obj\Debug\mcsharpbot.communication.pdb
+C:\Users\TOM\Documents\Projects\mcsharpbot\mcsharpbot.communication\bin\Debug\mcsharpbot.communication.dll
+C:\Users\TOM\Documents\Projects\mcsharpbot\mcsharpbot.communication\bin\Debug\mcsharpbot.communication.pdb
+C:\Users\TOM\Documents\Projects\mcsharpbot\mcsharpbot.communication\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\TOM\Documents\Projects\mcsharpbot\mcsharpbot.communication\obj\Debug\mcsharpbot.communication.dll
+C:\Users\TOM\Documents\Projects\mcsharpbot\mcsharpbot.communication\obj\Debug\mcsharpbot.communication.pdb

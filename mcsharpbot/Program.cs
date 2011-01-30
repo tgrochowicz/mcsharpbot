@@ -15,7 +15,7 @@ namespace mcsharpbot
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new MCSharpBotManager());
+            Application.Run(new ui.MCSharpBotManager());
         }
     }
 }
