@@ -15,7 +15,7 @@ namespace mcsharpbot.bots
 
         void Connection_ChatMessageReceived(object sender, communication.MinecraftClientChatEventArgs args)
         {
-            Console.WriteLine(args.User + ": " + args.Message);
+            OnFeedbackReceived(this, new BotFeedbackEventArgs(args.User + ": " + args.Message));
         }
 
         public override void PauseAction()
@@ -28,5 +28,38 @@ namespace mcsharpbot.bots
             base.StopAction();
         }
 
+
+        public override string BotName()
+        {
+            return "SimpleBot";
+        }
+
+        [UserEditable("Sample Boolean Property")]
+        public bool SampleBooleanProperty
+        {
+            get;
+            set;
+        }
+
+        [UserEditable("Sample String Property")]
+        public string SampleStringProperty
+        {
+            get;
+            set;
+        }
+
+        [UserEditable("Sample Enum Property")]
+        public SampleEnum SampleEnumProperty
+        {
+            get;
+            set;
+        }
+
+    }
+    public enum SampleEnum
+    {
+        One,
+        Two,
+        Three
     }
 }

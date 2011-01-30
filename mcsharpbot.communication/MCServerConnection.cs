@@ -428,8 +428,8 @@ namespace mcsharpbot.communication
                     MainSocket.Dispose();
 
                 }
-
-                DataThread.Abort();
+                if(DataThread != null)
+                    DataThread.Abort();
                 DataThread = null;
                 ServerAddress = null;
                 Server = null;
