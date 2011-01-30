@@ -6,9 +6,8 @@ using System.Net.Sockets;
 
 namespace mcsharpbot.communication.Packets
 {
-    public interface IPacketSend
+    public interface IPacketReceive
     {
         PacketType Type { get; }
-        void Write(NetworkStream s);
     }
 }

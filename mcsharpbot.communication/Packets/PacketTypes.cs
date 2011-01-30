@@ -5,7 +5,7 @@ using System.Text;
 
 namespace mcsharpbot.communication.Packets
 {
-    public enum PacketTypes
+    public enum PacketType
     {
         Ping =          0x00,
         Login =         0x01,

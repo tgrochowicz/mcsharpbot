@@ -46,10 +46,18 @@
     <Compile Include="MinecraftClientEventArgs.cs" />
     <Compile Include="MinecraftClientGeneralException.cs" />
     <Compile Include="MinecraftServer.cs" />
+    <Compile Include="Packets\IPacketReceive.cs" />
+    <Compile Include="Packets\PacketTypes.cs" />
+    <Compile Include="Packets\IPacketSend.cs" />
+    <Compile Include="Packets\Recieve\Handshake.cs" />
+    <Compile Include="Packets\Recieve\Login.cs" />
+    <Compile Include="Packets\Send\Handshake.cs" />
+    <Compile Include="Packets\Send\Login.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rotation.cs" />
     <Compile Include="StreamHelper.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

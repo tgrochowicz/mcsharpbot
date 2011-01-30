@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace mcsharpbot.communication
 {
-    public class MCServerConnection
+    public class MCServerConnection : IDisposable
     {
         private string Username, Password;
         private Socket MainSocket;
@@ -75,6 +75,9 @@ namespace mcsharpbot.communication
         public event MinecraftClientChatEventHandler ChatMessageReceived;
         public event MinecraftClientLocationEventHandler PlayerLocationChanged;
 
+        public Thread DataThread;
+        private bool disposed = false;
+
         public MCServerConnection(string Username, string Password, IPEndPoint Address)
         {
             this.Username = Username;
@@ -120,7 +123,8 @@ namespace mcsharpbot.communication
             this.PlayerLocation = new Location(0D, 0D, 0D, 0D + 1.65);
             this.PlayerRotation = new Rotation(0F, 0F);
 
-            new Thread(HandleData).Start();
+            DataThread = new Thread(HandleData);
+            DataThread.Start();
         }
 
         private void HandleData()
@@ -306,13 +310,23 @@ namespace mcsharpbot.communication
             try
             {
                 //handshake (client)
-                this.Stream.WriteByte(0x02);
-                StreamHelper.WriteString(Stream, this.Username);
-                this.Stream.Flush();
+                Packets.Send.Handshake clientHandshake = new Packets.Send.Handshake()
+                {
+                    Username = this.Username
+                };
+                clientHandshake.Write(this.Stream);
 
                 //handshake (server)
-                this.Stream.ReadByte();
-                this.Server.Hash = StreamHelper.ReadString(Stream); //hash
+                if (this.Stream.ReadByte() == (byte)Packets.PacketType.Handshake)
+                {
+                    Packets.Recieve.Handshake serverHandshake = new Packets.Recieve.Handshake(this.Stream);
+                    this.Server.Hash = serverHandshake.Hash;
+                }
+                else
+                {
+                    Debug.Severe(new MinecraftClientConnectException("The server didn't send back the right response"));
+                    return false;
+                }
 
                 if (this.Server.Hash != "-" && this.Server.Hash != "+")
                 {
@@ -395,6 +409,38 @@ namespace mcsharpbot.communication
         public MinecraftServer GetServer()
         {
             return this.Server;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    // Dispose managed resources.
+                    Stream.Dispose();
+                    MainSocket.Dispose();
+
+                }
+
+                DataThread.Abort();
+                DataThread = null;
+                ServerAddress = null;
+                Server = null;
+                disposed = true;
+
+            }
+        }
+
+        ~MCServerConnection()
+        {
+            Dispose(false);
         }
     }
 }
