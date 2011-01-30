@@ -15,7 +15,18 @@ namespace mcsharpbot.bots
 
         void Connection_ChatMessageReceived(object sender, communication.MinecraftClientChatEventArgs args)
         {
-            OnFeedbackReceived(this, new BotFeedbackEventArgs(args.User + ": " + args.Message));
+            if (!args.User.Equals(Connection.Username))
+            {
+                if (args.Message.Trim().Equals("mcb-time"))
+                {
+                    Connection.SendPacket(new mcsharpbot.communication.Packets.Types.Chat { Message = Connection.GetServer().GetFriendlyTime() });
+                }
+                else
+                {
+                    OnFeedbackReceived(this, new BotFeedbackEventArgs(args.User + ": " + args.Message));
+                    Connection.SendPacket(new mcsharpbot.communication.Packets.Types.Chat { Message = args.User + " said " + args.Message });
+                }
+            }
         }
 
         public override void PauseAction()

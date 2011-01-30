@@ -12,7 +12,8 @@ namespace mcsharpbot.communication
 {
     public class MCServerConnection : IDisposable
     {
-        private string Username, Password;
+        public string Username;
+        private string Password;
         private Socket MainSocket;
         private IPEndPoint ServerAddress;
         private NetworkStream Stream;
@@ -521,7 +522,10 @@ namespace mcsharpbot.communication
                     {
                         Stream.Dispose();
                     }
-                    MainSocket.Dispose();
+                    if (MainSocket != null)
+                    {
+                        MainSocket.Dispose();
+                    }
 
                 }
 

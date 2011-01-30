@@ -23,5 +23,17 @@ namespace mcsharpbot.communication
             this.ServerName = this.ServerMOTD = this.Password = this.Hash = "";
             this.MapSeed = this.Time = 0L;
         }
+        public string GetFriendlyTime()
+        {
+            long mod = Time % 24000;
+            mod = mod / 1000;
+            mod += 7;
+            mod = mod % 24;
+            string time = mod.ToString();
+            mod = Time % 1000;
+            double mins = mod / 1000.0 * 60.0;
+            time = time + ":" + ((int)mins).ToString().PadLeft(2, '0') ;
+            return time;
+        }
     }
 }
