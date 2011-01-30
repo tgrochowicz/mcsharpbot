@@ -310,7 +310,7 @@ namespace mcsharpbot.communication
             try
             {
                 //handshake (client)
-                Packets.Send.Handshake clientHandshake = new Packets.Send.Handshake()
+                Packets.Types.Handshake clientHandshake = new Packets.Types.Handshake()
                 {
                     Username = this.Username
                 };
@@ -319,8 +319,9 @@ namespace mcsharpbot.communication
                 //handshake (server)
                 if (this.Stream.ReadByte() == (byte)Packets.PacketType.Handshake)
                 {
-                    Packets.Recieve.Handshake serverHandshake = new Packets.Recieve.Handshake(this.Stream);
-                    this.Server.Hash = serverHandshake.Hash;
+                    Packets.Types.Handshake serverHandshake = new Packets.Types.Handshake();
+                    serverHandshake.Read(this.Stream);
+                    this.Server.Hash = serverHandshake.Username;
                 }
                 else
                 {
@@ -344,28 +345,35 @@ namespace mcsharpbot.communication
                 }
 
                 //login (client)
-                this.Stream.WriteByte(0x01);
-                StreamHelper.WriteInt(this.Stream, 8); //version
-                StreamHelper.WriteString(this.Stream, this.Username); //username
-                StreamHelper.WriteString(this.Stream, this.Server.Password); //server password
-                StreamHelper.WriteLong(this.Stream, 0L); //not used
-                this.Stream.WriteByte(0x00); //not used
-                this.Stream.Flush();
+                Packets.Types.Login clientLogin = new Packets.Types.Login()
+                {
+                    Version = 8,
+                    Username = this.Username,
+                    ServerPassword = this.Server.Password,
+                    MapSeed = 0L,
+                    Dimension = 0x00
+                };
+                clientLogin.Write(this.Stream);
 
                 //login (server)
-                this.Stream.ReadByte();
-                this.EntityID = StreamHelper.ReadInt(this.Stream); //entity id
-                this.Server.ServerName = StreamHelper.ReadString(this.Stream); //server name
-                this.Server.ServerMOTD = StreamHelper.ReadString(this.Stream); //motd
-                this.Server.MapSeed = StreamHelper.ReadLong(this.Stream); //map seed
-                this.Stream.ReadByte(); //dimension
+                if (this.Stream.ReadByte() != (byte)Packets.PacketType.Login)
+                {
+                    Debug.Severe(new MinecraftClientConnectException("The server didn't send back the right response"));
+                    return false;
+                }
+                Packets.Types.Login serverLogin = new Packets.Types.Login();
+                serverLogin.Read(this.Stream);
+                this.EntityID = serverLogin.Version;
+                this.Server.ServerName = serverLogin.Username;
+                this.Server.ServerMOTD = serverLogin.ServerPassword;
+                this.Server.MapSeed = serverLogin.MapSeed;
 
-                this.Stream.WriteByte(0x00);
-                this.Stream.Flush();
+                //this.Stream.WriteByte(0x00);
+                //this.Stream.Flush();
 
                 return true;
             }
-            catch (Exception e) { Debug.Severe(e); return false; }
+            catch (Exception e) { Debug.Severe(e); throw e; }
         }
 
         protected void OnConnectedToServer(object sender, MinecraftClientConnectEventArgs args)
@@ -429,8 +437,11 @@ namespace mcsharpbot.communication
 
                 }
 
-                DataThread.Abort();
-                DataThread = null;
+                if (DataThread != null)
+                {
+                    DataThread.Abort();
+                    DataThread = null;
+                }
                 ServerAddress = null;
                 Server = null;
                 disposed = true;
