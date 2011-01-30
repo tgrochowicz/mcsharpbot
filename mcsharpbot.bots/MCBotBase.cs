@@ -31,7 +31,7 @@ namespace mcsharpbot.bots
                 username = System.Web.HttpUtility.UrlEncode(username);
                 password = System.Web.HttpUtility.UrlEncode(password);
                 _connection = new MCServerConnection(username, password, new System.Net.IPEndPoint(addr, port));
-                _connection.UseAuthentication = true;
+                //_connection.UseAuthentication = true;
                 //log in
                 _connection.Connect();
                 BeginAction();

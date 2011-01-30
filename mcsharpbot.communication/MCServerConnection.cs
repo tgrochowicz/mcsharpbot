@@ -432,7 +432,10 @@ namespace mcsharpbot.communication
                 if (disposing)
                 {
                     // Dispose managed resources.
-                    Stream.Dispose();
+                    if (Stream != null)
+                    {
+                        Stream.Dispose();
+                    }
                     MainSocket.Dispose();
 
                 }
