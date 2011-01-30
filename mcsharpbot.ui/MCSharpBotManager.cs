@@ -34,7 +34,7 @@ namespace mcsharpbot.ui
 
         void bot_BotFeedbackReceived(object sender, BotFeedbackEventArgs args)
         {
-            lbFeedback.Items.Add(args.Message);
+            this.Invoke((MethodInvoker)delegate { lbFeedback.Items.Add(args.Message); });
             
         }
         private bots.MCBotBase bot;

@@ -474,7 +474,7 @@ namespace mcsharpbot.communication
 
         protected void OnChatMessageReceived(object sender, MinecraftClientChatEventArgs args)
         {
-            if (DisconnectedFromServer != null)
+            if (ChatMessageReceived != null)
             {
                 ChatMessageReceived(this, new MinecraftClientChatEventArgs(args.User, args.Message));
             }
