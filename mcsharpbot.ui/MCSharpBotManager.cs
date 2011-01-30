@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
 using mcsharpbot.bots;
+using System.IO.IsolatedStorage;
+using System.IO;
 
 namespace mcsharpbot.ui
 {
@@ -16,7 +18,29 @@ namespace mcsharpbot.ui
         public MCSharpBotManager()
         {
             InitializeComponent();
-            
+            LoadSettings();
+            txtUserName.DataBindings.Add("Text", _settings, "Username");
+            txtPassword.DataBindings.Add("Text", _settings, "Password");
+            txtServerAddress.DataBindings.Add("Text", _settings, "ServerName");
+            txtServerPort.DataBindings.Add("Text", _settings, "Port");
+            checkBox1.DataBindings.Add("Checked", _settings, "Auth");
+        }
+
+        private void LoadSettings()
+        {
+            IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
+            if (isoStore.FileExists(settings))
+            {
+                System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(typeof(MCSharpBotSettings));
+                IsolatedStorageFileStream fs = new IsolatedStorageFileStream(settings, FileMode.Open, isoStore);
+                StreamReader stream = new StreamReader(fs);
+                _settings = (MCSharpBotSettings)ser.Deserialize(stream);
+                stream.Close();
+                isoStore.DeleteFile(settings);
+                cbRemember.Checked = true;
+            }
+            else
+                _settings = new MCSharpBotSettings();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -55,6 +79,8 @@ namespace mcsharpbot.ui
         {
             if (bot != null && bot.Running)
                 bot.Stop();
+            if (cbRemember.Checked)
+                SaveSettings();
         }
 
         private void MCSharpBotManager_Load(object sender, EventArgs e)
@@ -116,6 +142,36 @@ namespace mcsharpbot.ui
                 }
             }
 
+        }
+        string settings = "botsettings.xml";
+        public void SaveSettings()
+        {
+            try
+            {
+                IsolatedStorageFile store = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
+                IsolatedStorageFileStream stream = new IsolatedStorageFileStream(settings, System.IO.FileMode.OpenOrCreate, store);
+                StreamWriter writer = new StreamWriter(stream);
+                System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(_settings.GetType());
+                ser.Serialize(writer, _settings);
+            }
+            catch { }
+        }
+        private MCSharpBotSettings _settings;
+    }
+    public class MCSharpBotSettings
+    {
+        public string Username
+        { get; set; }
+        public string Password
+        { get; set; }
+        public string ServerName
+        { get; set; }
+        public string Port
+        { get; set; }
+        public bool Auth
+        {
+            get;
+            set;
         }
     }
 

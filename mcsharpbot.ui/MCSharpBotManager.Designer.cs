@@ -46,6 +46,7 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lbFeedback = new System.Windows.Forms.ListBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.cbRemember = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -141,6 +142,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cbRemember);
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.txtUserName);
             this.groupBox1.Controls.Add(this.label4);
@@ -230,6 +232,16 @@
             this.checkBox1.Text = "Authentication";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // cbRemember
+            // 
+            this.cbRemember.AutoSize = true;
+            this.cbRemember.Location = new System.Drawing.Point(444, 0);
+            this.cbRemember.Name = "cbRemember";
+            this.cbRemember.Size = new System.Drawing.Size(77, 17);
+            this.cbRemember.TabIndex = 14;
+            this.cbRemember.Text = "Remember";
+            this.cbRemember.UseVisualStyleBackColor = true;
+            // 
             // MCSharpBotManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -274,5 +286,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.ListBox lbFeedback;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox cbRemember;
     }
 }

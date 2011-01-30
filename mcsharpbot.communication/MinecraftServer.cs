@@ -27,7 +27,7 @@ namespace mcsharpbot.communication
         {
             long mod = Time % 24000;
             mod = mod / 1000;
-            mod += 7;
+            mod += 8;
             mod = mod % 24;
             string time = mod.ToString();
             mod = Time % 1000;
