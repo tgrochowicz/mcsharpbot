@@ -440,8 +440,8 @@ namespace mcsharpbot.communication
                 if (DataThread != null)
                 {
                     DataThread.Abort();
-                    DataThread = null;
                 }
+                DataThread = null;
                 ServerAddress = null;
                 Server = null;
                 disposed = true;

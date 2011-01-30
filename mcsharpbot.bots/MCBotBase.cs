@@ -9,6 +9,10 @@ namespace mcsharpbot.bots
 {
     public class MCBotBase
     {
+        public MCBotBase()
+        {
+            Running = false;
+        }
         public void Start(string username, string password, string servername, int port)
         {
             //Create server
@@ -31,6 +35,8 @@ namespace mcsharpbot.bots
                 //log in
                 _connection.Connect();
                 BeginAction();
+
+                Running = true;
             }
             else
                 throw new MinecraftClientGeneralException("Unable to connect to server");
@@ -56,7 +62,8 @@ namespace mcsharpbot.bots
         {
             StopAction();
             //log off
-            _connection = null;
+            _connection.Dispose();
+            Running = false;
         }        
 
 
@@ -67,6 +74,50 @@ namespace mcsharpbot.bots
         public virtual void StopAction()
         {        }
 
+        public bool Running
+        {
+            get;
+            set;
+        }
 
+        public virtual string BotName()
+        {
+            return "MCBotBase";
+        }
+
+        public override string ToString()
+        {
+            return BotName();
+        }
+
+        public delegate void BotFeedbackEventHandler(object sender, BotFeedbackEventArgs args);
+        public event BotFeedbackEventHandler BotFeedbackReceived;
+        protected void OnFeedbackReceived(object sender, BotFeedbackEventArgs args)
+        {
+            if (BotFeedbackReceived != null)
+            {
+                BotFeedbackReceived(sender, args);
+            }
+        }
+    }
+    public class BotFeedbackEventArgs : EventArgs
+    {
+        public string Message;
+
+        public BotFeedbackEventArgs(string FeedBackMessage)
+            : base()
+        {
+            this.Message = FeedBackMessage;
+        }
+    }
+    [AttributeUsage(AttributeTargets.All)]
+    public class UserEditableAttribute : System.Attribute
+    {
+        public readonly string Name;
+
+        public UserEditableAttribute(string Name)
+        {
+            this.Name = Name;
+        }
     }
 }
