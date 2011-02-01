@@ -40,7 +40,10 @@ namespace mcsharpbot.ui
                 cbRemember.Checked = true;
             }
             else
+            {
                 _settings = new MCSharpBotSettings();
+                _settings.Port = "25565";
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
