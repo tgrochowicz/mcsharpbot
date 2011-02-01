@@ -25,12 +25,12 @@ namespace mcsharpbot.communication.Packets.Types
             Items = new ItemStack[Length];
             for (int i = 0; i < Length; i++)
             {
-                short word1 = StreamHelper.ReadShort(stream);
-                if (word1 >= 0)
+                short primary = StreamHelper.ReadShort(stream);
+                if (primary >= 0)
                 {
-                    byte byte0 = (byte)stream.ReadByte();
-                    short word2 = StreamHelper.ReadShort(stream);
-                    Items[i] = new ItemStack(word1, byte0, word2);
+                    byte count = (byte)stream.ReadByte();
+                    short secondary = StreamHelper.ReadShort(stream);
+                    Items[i] = new ItemStack(primary, count, secondary);
                 }
             }
         }

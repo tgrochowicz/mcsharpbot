@@ -24,7 +24,7 @@ namespace mcsharpbot.communication.Packets.Types
         {
             X = StreamHelper.ReadInt(stream);
             Z = StreamHelper.ReadInt(stream);
-            Size = (short)(StreamHelper.ReadShort(stream) & 0xffff);
+            Size = StreamHelper.ReadShort(stream);
             CoordinateArray = new short[Size];
             TypeArray = new byte[Size];
             MetadataArray = new byte[Size];

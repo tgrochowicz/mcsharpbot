@@ -45,11 +45,16 @@
   <ItemGroup>
     <Compile Include="ChunkPosition.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="Entities\EntityCollection.cs" />
+    <Compile Include="Entities\EntityType.cs" />
+    <Compile Include="Entities\PickupEntityType.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="MCServerConnection.cs" />
     <Compile Include="MinecraftClientEventArgs.cs" />
     <Compile Include="MinecraftClientGeneralException.cs" />
     <Compile Include="MinecraftServer.cs" />
+    <Compile Include="Entities\MobEntityType.cs" />
+    <Compile Include="Entities\NamedEntityType.cs" />
     <Compile Include="Packets\ActionType.cs" />
     <Compile Include="Packets\AnimationType.cs" />
     <Compile Include="Packets\Faces.cs" />
@@ -83,6 +88,7 @@
     <Compile Include="Packets\Types\Note.cs" />
     <Compile Include="Packets\Types\Painting.cs" />
     <Compile Include="Packets\Types\PickupSpawn.cs" />
+    <Compile Include="Packets\Types\Ping.cs" />
     <Compile Include="Packets\Types\Place.cs" />
     <Compile Include="Packets\Types\PlayerInventory.cs" />
     <Compile Include="Packets\Types\PlayerLook.cs" />
@@ -105,6 +111,7 @@
     <Compile Include="Packets\Types\WindowSlot.cs" />
     <Compile Include="Packets\Types\WindowProgress.cs" />
     <Compile Include="Packets\Types\WindowToken.cs" />
+    <Compile Include="Entities\VehicleEntityType.cs" />
     <Compile Include="Packets\WindowTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rotation.cs" />

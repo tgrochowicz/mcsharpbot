@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using mcsharpbot.communication.Entities;
 
 namespace mcsharpbot.communication
 {
@@ -15,6 +16,7 @@ namespace mcsharpbot.communication
         public IPEndPoint ServerAddress;
         public string ServerName, ServerMOTD, Password, Hash;
         public long MapSeed, Time;
+        public EntityCollection Entities;
 
         public MinecraftServer(Socket socket)
         {
@@ -22,6 +24,7 @@ namespace mcsharpbot.communication
             this.ServerAddress = (IPEndPoint)this.Socket.RemoteEndPoint;
             this.ServerName = this.ServerMOTD = this.Password = this.Hash = "";
             this.MapSeed = this.Time = 0L;
+            Entities = new EntityCollection();
         }
         public string GetFriendlyTime()
         {

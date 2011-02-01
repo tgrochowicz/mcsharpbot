@@ -67,7 +67,7 @@ namespace mcsharpbot.communication.Packets.Types
 
         static void CopyStream(Stream input, Stream output)
         {
-            byte[] buffer = new byte[8192];
+            byte[] buffer = new byte[2000];
             int bytesRead;
             while ((bytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
             {
