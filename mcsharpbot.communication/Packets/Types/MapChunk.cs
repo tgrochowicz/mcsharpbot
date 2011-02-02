@@ -23,7 +23,6 @@ namespace mcsharpbot.communication.Packets.Types
         public int YSize;
         public int ZSize;
         public byte[] Chunk;
-        private int ChunkSize;
 
         public void Read(NetworkStream stream)
         {
@@ -45,7 +44,6 @@ namespace mcsharpbot.communication.Packets.Types
                 CopyStream(gzip, memoryStream);
                 Chunk = memoryStream.ToArray();
             }
-
 
         }
 
@@ -74,5 +72,7 @@ namespace mcsharpbot.communication.Packets.Types
                 output.Write(buffer, 0, bytesRead);
             }
         }
+
+        
     }
 }

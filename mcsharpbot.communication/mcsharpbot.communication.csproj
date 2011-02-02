@@ -43,7 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Blocks.cs" />
+    <Compile Include="Chunk.cs" />
+    <Compile Include="ChunkCoordinates.cs" />
     <Compile Include="ChunkPosition.cs" />
+    <Compile Include="ChunkProvider.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Entities\EntityCollection.cs" />
     <Compile Include="Entities\EntityType.cs" />
@@ -55,6 +59,7 @@
     <Compile Include="MinecraftServer.cs" />
     <Compile Include="Entities\MobEntityType.cs" />
     <Compile Include="Entities\NamedEntityType.cs" />
+    <Compile Include="NibbleArray.cs" />
     <Compile Include="Packets\ActionType.cs" />
     <Compile Include="Packets\AnimationType.cs" />
     <Compile Include="Packets\Faces.cs" />

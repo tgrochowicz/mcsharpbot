@@ -17,6 +17,7 @@ namespace mcsharpbot.communication
         public string ServerName, ServerMOTD, Password, Hash;
         public long MapSeed, Time;
         public EntityCollection Entities;
+        public ChunkProvider Chunks;
 
         public MinecraftServer(Socket socket)
         {
@@ -25,6 +26,7 @@ namespace mcsharpbot.communication
             this.ServerName = this.ServerMOTD = this.Password = this.Hash = "";
             this.MapSeed = this.Time = 0L;
             Entities = new EntityCollection();
+            Chunks = new ChunkProvider();
         }
         public string GetFriendlyTime()
         {

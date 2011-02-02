@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Timers;
 using mcsharpbot.communication.Packets;
 using mcsharpbot.communication.Packets.Types;
 using mcsharpbot.communication.Entities;
@@ -66,6 +67,11 @@ namespace mcsharpbot.communication
             }
         }
 
+        public IPacket LastReceived
+        {
+            get { return this.Inbox.Last(); }
+        }
+
         private int EntityID;
         private string SessionID;
         private Location _playerLocation;
@@ -83,6 +89,7 @@ namespace mcsharpbot.communication
 
         public Thread DataThread;
         private bool disposed = false;
+        private System.Timers.Timer PositionTimer;
 
         private List<IPacket> Inbox = new List<IPacket>();
         private List<IPacket> Outbox = new List<IPacket>();
@@ -94,7 +101,9 @@ namespace mcsharpbot.communication
             this.ServerAddress = Address;
             this.SessionID = "";
             this.Connected = false;
+
         }
+
         public void Connect()
         {
             if (UseAuthentication)
@@ -134,19 +143,25 @@ namespace mcsharpbot.communication
 
             DataThread = new Thread(HandleData);
             DataThread.Start();
+
+            PositionTimer = new System.Timers.Timer(100);
+            PositionTimer.Elapsed += new ElapsedEventHandler(PositionTimer_Elapsed);
+            PositionTimer.Enabled = true;
+            PositionTimer.Start();
         }
+
 
         private void HandleData()
         {
             byte id;
             PacketType type;
 
-            try
-            {
+            //try
+            //{
                 while (MainSocket.Connected && (int)(id = (byte)Stream.ReadByte()) != -1)
                 {
-                    try
-                    {
+                    //try
+                    //{
                         type = (PacketType)id;
                         switch (type)
                         {
@@ -445,11 +460,17 @@ namespace mcsharpbot.communication
                             case PacketType.PreChunk:
                                 PreChunk preChunkPacket = new PreChunk();
                                 preChunkPacket.Read(Stream);
+
+                                this.Server.Chunks.AllocateChunk(preChunkPacket.X, preChunkPacket.Y);
+
                                 OnPacketReceived(this, preChunkPacket);
                                 break;
                             case PacketType.MapChunk:
                                 MapChunk mapChunkPacket = new MapChunk();
                                 mapChunkPacket.Read(Stream);
+
+                                this.ProcessChunk(mapChunkPacket.X, mapChunkPacket.Y, mapChunkPacket.Z, mapChunkPacket.XSize, mapChunkPacket.YSize, mapChunkPacket.ZSize, mapChunkPacket.Chunk);
+
                                 OnPacketReceived(this, mapChunkPacket);
                                 break;
                             case PacketType.MultiBlockChange:
@@ -522,11 +543,11 @@ namespace mcsharpbot.communication
                                 //Debug.Warning("Unknown packet received. [" + (int)id + "]");
                                 break;
                         }
-                    }
-                    catch (Exception e) { Debug.Warning(e); }
+                    //}
+                    //catch (Exception e) { Debug.Warning(e); throw; }
                 }
-            }
-            catch (Exception e) { Debug.Severe(new MinecraftClientGeneralException(e)); throw e; }
+            //}
+            //catch (Exception e) { Debug.Severe(new MinecraftClientGeneralException(e)); throw; }
 
             Connected = false;
 
@@ -550,6 +571,8 @@ namespace mcsharpbot.communication
         {
             WebClient web = new WebClient();
             string data = web.DownloadString(String.Format("http://www.minecraft.net/game/joinserver.jsp?user={0}&sessionId={1}&serverId={2}", this.Username, this.SessionID, this.Server.Hash));
+
+            web.Dispose();
 
             return (data == "OK");
         }
@@ -620,7 +643,7 @@ namespace mcsharpbot.communication
 
                 return true;
             }
-            catch (Exception e) { Debug.Severe(e); throw e; }
+            catch (Exception e) { Debug.Severe(e); throw; }
         }
 
         protected void OnPacketReceived(object sender, IPacket packet)
@@ -696,6 +719,11 @@ namespace mcsharpbot.communication
             OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));
         }
 
+        void PositionTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            
+        }
+
         public MinecraftServer GetServer()
         {
             return this.Server;
@@ -705,6 +733,56 @@ namespace mcsharpbot.communication
         {
             packet.Write(Stream);
             OnPacketSent(this, packet);
+        }
+
+        public void ProcessChunk(int X, int Y, int Z, int XSize, int YSize, int ZSize, byte[] Chunk)
+        {
+            int xShift = X >> 4;
+            int zShift = Z >> 4;
+            int xEnd = ((X + XSize) - 1) >> 4;
+            int zEnd = ((Z + ZSize) - 1) >> 4;
+
+            int blockSize = 0;
+            int yCopy = Y;
+            int yEnd = Y + YSize;
+
+            if (yCopy < 0)
+            {
+                yCopy = 0;
+            }
+            if (yEnd > 128)
+            {
+                yEnd = 128;
+            }
+
+            for (int i = xShift; i <= xEnd; i++)
+            {
+                int row = (X - i) * 16;
+                int nextrow = ((X + Y) - i) * 16;
+                if (row < 0)
+                {
+                    row = 0;
+                }
+                if (nextrow > 16)
+                {
+                    nextrow = 16;
+                }
+
+                for (int k = zShift; k <= yEnd; k++)
+                {
+                    int zRow = (Z - k) * 16;
+                    int zNextrow = ((Z + ZSize) - k) * 19;
+                    if (zRow < 0)
+                    {
+                        zRow = 0;
+                    }
+                    if (zNextrow > 16)
+                    {
+                        zNextrow = 16;
+                    }
+                    blockSize = this.Server.Chunks.GetFromFromCoordinates(i, k).LoadFromChunk(Chunk, row, yCopy, zRow, nextrow, yEnd, zNextrow, blockSize);
+                }
+            }
         }
 
         public void Dispose()
@@ -733,7 +811,10 @@ namespace mcsharpbot.communication
                     {
                         MainSocket.Dispose();
                     }
-
+                    if (PositionTimer != null)
+                    {
+                        PositionTimer.Dispose();
+                    }
                 }
 
                 DataThread = null;
