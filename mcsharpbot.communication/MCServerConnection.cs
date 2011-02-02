@@ -211,18 +211,27 @@ namespace mcsharpbot.communication
                             case PacketType.PlayerPosition:
                                 PlayerPosition playerPositionPacket = new PlayerPosition();
                                 playerPositionPacket.Read(Stream);
+
+                                this.PlayerLocation.X = playerPositionPacket.X;
+                                this.PlayerLocation.Y = playerPositionPacket.Y;
+                                this.PlayerLocation.Z = playerPositionPacket.Z;
+                                this.PlayerLocation.Stance = playerPositionPacket.Stance;
+
                                 OnPacketReceived(this, playerPositionPacket);
                                 break;
                             case PacketType.PlayerLook:
                                 PlayerLook playerLookPacket = new PlayerLook();
                                 playerLookPacket.Read(Stream);
+
                                 this.PlayerRotation.Pitch = playerLookPacket.Pitch;
                                 this.PlayerRotation.Yaw = playerLookPacket.Yaw;
+
                                 OnPacketReceived(this, playerLookPacket);
                                 break;
                             case PacketType.PlayerLookMove:
                                 PlayerLookMove playerLookMovePacket = new PlayerLookMove();
                                 playerLookMovePacket.Read(Stream);
+
                                 this.PlayerLocation.X = playerLookMovePacket.X;
                                 this.PlayerLocation.Y = playerLookMovePacket.Y;
                                 this.PlayerLocation.Stance = playerLookMovePacket.Stance;
@@ -231,6 +240,7 @@ namespace mcsharpbot.communication
                                 this.PlayerRotation.Yaw = playerLookMovePacket.Yaw;
                                 this.OnGround = playerLookMovePacket.OnGround;
                                 OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));
+
                                 OnPacketReceived(this, playerLookMovePacket);
                                 break;
                             case PacketType.BlockDig:
@@ -539,7 +549,7 @@ namespace mcsharpbot.communication
         private Boolean CheckServer()
         {
             WebClient web = new WebClient();
-            String data = web.DownloadString(String.Format("http://www.minecraft.net/game/joinserver.jsp?user={0}&sessionId={1}&serverId={2}", this.Username, this.SessionID, this.Server.Hash));
+            string data = web.DownloadString(String.Format("http://www.minecraft.net/game/joinserver.jsp?user={0}&sessionId={1}&serverId={2}", this.Username, this.SessionID, this.Server.Hash));
 
             return (data == "OK");
         }
@@ -670,6 +680,19 @@ namespace mcsharpbot.communication
         public void SetPlayerLocation(Location PlayerLocation) //Currently does nothing
         {
             this.PlayerLocation = PlayerLocation;
+
+            PlayerLookMove playerLookMove = new PlayerLookMove()
+            {
+                X = this.PlayerLocation.X,
+                Y = this.PlayerLocation.Y,
+                Z = this.PlayerLocation.Z,
+                Stance = this.PlayerLocation.Stance,
+                Pitch = this.PlayerRotation.Pitch,
+                Yaw = this.PlayerRotation.Yaw,
+                OnGround = false
+            };
+            this.SendPacket(playerLookMove);
+
             OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));
         }
 

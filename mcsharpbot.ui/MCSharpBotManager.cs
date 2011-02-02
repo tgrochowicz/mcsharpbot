@@ -99,7 +99,7 @@ namespace mcsharpbot.ui
             List<MCBotBase> returnable = new List<MCBotBase>();
 
             returnable.Add(new SimpleBot());
-
+            returnable.Add(new MoveBot());
 
             return returnable;
         }
