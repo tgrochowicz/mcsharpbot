@@ -7,6 +7,7 @@ namespace mcsharpbot.communication
 {
     public enum Blocks
     {
+        Air = 0,
         Stone = 1,
         Grass = 2,
         Dirt = 3,

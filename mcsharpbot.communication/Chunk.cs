@@ -7,12 +7,17 @@ namespace mcsharpbot.communication
 {
     public class Chunk
     {
+        public static int ChunkSize = 10;
+        public static int Height = 128;
 
         public byte[] Blocks;
         public NibbleArray Data;
         public NibbleArray SkylightMap;
         public NibbleArray BlocklightMap;
         public byte[] HeightMap;
+
+        public int X;
+        public int Y;
 
         public Chunk(byte[] buffer, int X, int Y)
         {
@@ -21,6 +26,8 @@ namespace mcsharpbot.communication
             Data = new NibbleArray(buffer.Length);
             SkylightMap = new NibbleArray(buffer.Length);
             BlocklightMap = new NibbleArray(buffer.Length);
+            this.X = X;
+            this.Y = Y;
         }
 
         public int LoadFromChunk(byte[] Chunk, int row, int yCopy, int zRow, int nextrow, int yEnd, int zNextrow, int Previous)

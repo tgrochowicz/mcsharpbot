@@ -719,9 +719,59 @@ namespace mcsharpbot.communication
             OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));
         }
 
+        Location PreviousLocation;
+        Rotation PreviousRotation;
+
         void PositionTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            
+            if (PreviousLocation != this.PlayerLocation && PreviousRotation != this.PlayerRotation)
+            {
+                PreviousLocation = this.PlayerLocation;
+                PreviousRotation = this.PlayerRotation;
+                PlayerLookMove lookMove = new PlayerLookMove()
+                {
+                    X = this.PlayerLocation.X,
+                    Y = this.PlayerLocation.Y,
+                    Z = this.PlayerLocation.Z,
+                    Stance = this.PlayerLocation.Stance,
+                    Pitch = this.PlayerRotation.Pitch,
+                    Yaw = this.PlayerRotation.Yaw,
+                    OnGround = true
+                };
+                this.SendPacket(lookMove);
+                return;
+            }
+            if (PreviousLocation != this.PlayerLocation)
+            {
+                PreviousLocation = this.PlayerLocation;
+                PlayerPosition position = new PlayerPosition()
+                {
+                    X = this.PlayerLocation.X,
+                    Y = this.PlayerLocation.Y,
+                    Z = this.PlayerLocation.Z,
+                    Stance = this.PlayerLocation.Stance,
+                    OnGround = true
+                };
+                this.SendPacket(position);
+                return;
+            }
+            if (PreviousRotation != this.PlayerRotation)
+            {
+                PreviousRotation = this.PlayerRotation;
+                PlayerLook look = new PlayerLook()
+                {
+                    OnGround = true,
+                    Pitch = this.PlayerRotation.Pitch,
+                    Yaw = this.PlayerRotation.Yaw
+                };
+                this.SendPacket(look);
+                return;
+            }
+            Flying flying = new Flying()
+            {
+                OnGround = true
+            };
+            this.SendPacket(flying);
         }
 
         public MinecraftServer GetServer()
@@ -780,7 +830,7 @@ namespace mcsharpbot.communication
                     {
                         zNextrow = 16;
                     }
-                    blockSize = this.Server.Chunks.GetFromFromCoordinates(i, k).LoadFromChunk(Chunk, row, yCopy, zRow, nextrow, yEnd, zNextrow, blockSize);
+                    blockSize = this.Server.Chunks.GetFromCoordinates(i, k).LoadFromChunk(Chunk, row, yCopy, zRow, nextrow, yEnd, zNextrow, blockSize);
                 }
             }
         }

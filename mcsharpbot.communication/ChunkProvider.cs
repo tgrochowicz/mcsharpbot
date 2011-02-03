@@ -28,7 +28,7 @@ namespace mcsharpbot.communication
             return chunk;
         }
 
-        public Chunk GetFromFromCoordinates(int X, int Y)
+        public Chunk GetFromCoordinates(int X, int Y)
         {
             Chunk c = (Chunk)Chunks[new ChunkCoordinates(X, Y)];
             if(c == null) 
@@ -38,6 +38,52 @@ namespace mcsharpbot.communication
             else 
             {
                 return c;
+            }
+        }
+
+        public Blocks GetBlock(int X, int Y, int Z)
+        {
+            if (Y < 0)
+            {
+                return Blocks.Bedrock;
+            }
+            if (Y >= Chunk.Height)
+            {
+                return Blocks.Air;
+            }
+            int ChunkX;
+            int ChunkY;
+
+            ChunkFromCoordinate(X, Y, out ChunkX, out ChunkY);
+            Chunk chunk = GetFromCoordinates(ChunkX, ChunkY);
+
+            int CX = chunk.X;
+            int CY = chunk.Y;
+
+            if (X < 0)
+            {
+                X = X - (CX * Chunk.ChunkSize);
+            }
+            if (Z < 0)
+            {
+                Z = Z - (CY * Chunk.ChunkSize);
+            }
+
+            return (Blocks)chunk.Blocks[X + (Y * Chunk.Height + Z) * Chunk.ChunkSize];
+
+        }
+
+        public void ChunkFromCoordinate(int X, int Y, out int ChunkX, out int ChunkY)
+        {
+            ChunkX = X / Chunk.ChunkSize;
+            ChunkY = Y / Chunk.ChunkSize;
+            if (X < 0 && X % Chunk.ChunkSize != 0)
+            {
+                ChunkX--;
+            }
+            if (Y < 0 && Y % Chunk.ChunkSize != 0)
+            {
+                ChunkY--;
             }
         }
 

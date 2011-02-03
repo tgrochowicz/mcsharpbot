@@ -24,7 +24,7 @@ namespace mcsharpbot.communication
             Dictionary<BlockCoordinates, Blocks> returnable = new Dictionary<BlockCoordinates, Blocks>();
             if (Distance <= 0)
             {
-                Blocks current = (Blocks)Enum.Parse(typeof(Blocks), Chunks.GetFromFromCoordinates(coordinate.X, coordinate.Y).Blocks[coordinate.Z].ToString());
+                Blocks current = (Blocks)Enum.Parse(typeof(Blocks), Chunks.GetFromCoordinates(coordinate.X, coordinate.Y).Blocks[coordinate.Z].ToString());
             }
             else
             {
