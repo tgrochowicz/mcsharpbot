@@ -25,6 +25,7 @@ namespace mcsharpbot.communication
             if (Distance <= 0)
             {
                 Blocks current = (Blocks)Enum.Parse(typeof(Blocks), Chunks.GetFromFromCoordinates(coordinate.X, coordinate.Y).Blocks[coordinate.Z].ToString());
+                returnable.Add(coordinate, current);
             }
             else
             {
