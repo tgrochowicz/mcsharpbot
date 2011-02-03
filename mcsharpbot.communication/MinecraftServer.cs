@@ -18,6 +18,7 @@ namespace mcsharpbot.communication
         public long MapSeed, Time;
         public EntityCollection Entities;
         public ChunkProvider Chunks;
+        public MapManager MapManager;
 
         public MinecraftServer(Socket socket)
         {
@@ -27,6 +28,7 @@ namespace mcsharpbot.communication
             this.MapSeed = this.Time = 0L;
             Entities = new EntityCollection();
             Chunks = new ChunkProvider();
+            MapManager = new MapManager(Chunks);
         }
         public string GetFriendlyTime()
         {

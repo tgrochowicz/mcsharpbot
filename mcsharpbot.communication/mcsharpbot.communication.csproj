@@ -53,6 +53,7 @@
     <Compile Include="Entities\EntityType.cs" />
     <Compile Include="Entities\PickupEntityType.cs" />
     <Compile Include="Location.cs" />
+    <Compile Include="MapManager.cs" />
     <Compile Include="MCServerConnection.cs" />
     <Compile Include="MinecraftClientEventArgs.cs" />
     <Compile Include="MinecraftClientGeneralException.cs" />
