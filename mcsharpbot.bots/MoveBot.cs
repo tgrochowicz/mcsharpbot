@@ -20,7 +20,6 @@ namespace mcsharpbot.bots
                 if (args.Message.Trim() == "move")
                 {
                     Connection.PlayerRotation.Yaw = 150;
-                    Connection.SetPlayerLocation(Connection.PlayerLocation);
                 }
             }
         }

@@ -78,7 +78,10 @@ namespace mcsharpbot.communication
 
             return Previous;
         }
-        
 
+        public Blocks GetBlockID(int X, int Y, int Z)
+        {
+            return (Blocks)this.Blocks[X << 11 | Y << 7 | Z];
+        }
     }
 }

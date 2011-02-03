@@ -51,40 +51,10 @@ namespace mcsharpbot.communication
             {
                 return Blocks.Air;
             }
-            int ChunkX;
-            int ChunkY;
+            Chunk chunk = GetFromCoordinates(X >> 4, Y >> 4);
 
-            ChunkFromCoordinate(X, Y, out ChunkX, out ChunkY);
-            Chunk chunk = GetFromCoordinates(ChunkX, ChunkY);
+            return chunk.GetBlockID(X & 0xf, Y, Z & 0xf);
 
-            int CX = chunk.X;
-            int CY = chunk.Y;
-
-            if (X < 0)
-            {
-                X = X - (CX * Chunk.ChunkSize);
-            }
-            if (Z < 0)
-            {
-                Z = Z - (CY * Chunk.ChunkSize);
-            }
-
-            return (Blocks)chunk.Blocks[X + (Y * Chunk.Height + Z) * Chunk.ChunkSize];
-
-        }
-
-        public void ChunkFromCoordinate(int X, int Y, out int ChunkX, out int ChunkY)
-        {
-            ChunkX = X / Chunk.ChunkSize;
-            ChunkY = Y / Chunk.ChunkSize;
-            if (X < 0 && X % Chunk.ChunkSize != 0)
-            {
-                ChunkX--;
-            }
-            if (Y < 0 && Y % Chunk.ChunkSize != 0)
-            {
-                ChunkY--;
-            }
         }
 
     }
