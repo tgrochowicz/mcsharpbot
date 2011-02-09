@@ -41,6 +41,7 @@ namespace mcsharpbot.communication.Packets
         EntityTeleport =    0x22,
         Status =            0x26,
         VehicleAttach =     0x27,
+        EntityMetadata =    0x28,
         PreChunk =          0x32,
         MapChunk =          0x33,
         MultiBlockChange =  0x34,

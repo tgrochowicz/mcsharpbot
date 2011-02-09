@@ -156,398 +156,403 @@ namespace mcsharpbot.communication
             byte id;
             PacketType type;
 
-            //try
-            //{
-                while (MainSocket.Connected && (int)(id = (byte)Stream.ReadByte()) != -1)
+            while (MainSocket.Connected && (int)(id = (byte)Stream.ReadByte()) != -1)
+            {
+                type = (PacketType)id;
+                switch (type)
                 {
-                    //try
-                    //{
-                        type = (PacketType)id;
-                        switch (type)
+                    case PacketType.Ping: //Ping
+                        Ping pingPacket = new Ping();
+                        this.SendPacket(pingPacket);
+                        OnPacketReceived(this, pingPacket);
+                        break;
+                    case PacketType.Chat: //Chat
+                        try
                         {
-                            case PacketType.Ping: //Ping
-                                Ping pingPacket = new Ping();
-                                this.SendPacket(pingPacket);
-                                OnPacketReceived(this, pingPacket);
+                            Chat chatPacket = new Chat();
+                            chatPacket.Read(Stream);
+                            string chatMsg = chatPacket.Message;
+                            string[] chatMsgSplit = chatMsg.Split(new char[] { '>', ']' });
+                            string chatUsername = chatMsgSplit[0].Trim('<', '[');
+                            if (this.Username == chatUsername)
+                            {
                                 break;
-                            case PacketType.Chat: //Chat
-                                try
-                                {
-                                    Chat chatPacket = new Chat();
-                                    chatPacket.Read(Stream);
-                                    string chatMsg = chatPacket.Message;
-                                    string[] chatMsgSplit = chatMsg.Split(new char[] { '>', ']' });
-                                    string chatUsername = chatMsgSplit[0].Trim('<', '[');
-                                    if (this.Username == chatUsername)
-                                    {
-                                        break;
-                                    }
-                                    OnChatMessageReceived(this, new MinecraftClientChatEventArgs(chatUsername, chatMsgSplit[1]));
-                                    OnPacketReceived(this, chatPacket);
-                                }
-                                catch (IndexOutOfRangeException e) { }
-                                break;
-                            case PacketType.UpdateTime:
-                                UpdateTime updateTimePacket = new UpdateTime();
-                                updateTimePacket.Read(Stream);
-                                this.Server.Time = updateTimePacket.Time;
-                                OnPacketReceived(this, updateTimePacket);
-                                break;
-                            case PacketType.PlayerInventory:
-                                PlayerInventory playerInventoryPacket = new PlayerInventory();
-                                playerInventoryPacket.Read(Stream);
-                                OnPacketReceived(this, playerInventoryPacket);
-                                break;
-                            case PacketType.SpawnPosition:
-                                SpawnPosition spawnPositionPacket = new SpawnPosition();
-                                spawnPositionPacket.Read(Stream);
-                                OnPacketReceived(this, spawnPositionPacket);
-                                break;
-                            case PacketType.Use:
-                                Use usePacket = new Use();
-                                usePacket.Read(Stream);
-                                OnPacketReceived(this, usePacket);
-                                break;
-                            case PacketType.Health:
-                                Health healthPacket = new Health();
-                                healthPacket.Read(Stream);
-                                OnPacketReceived(this, healthPacket);
-                                break;
-                            case PacketType.Respawn:
-                                Respawn respawnPacket = new Respawn();
-                                respawnPacket.Read(Stream);
-                                OnPacketReceived(this, respawnPacket);
-                                break;
-                            case PacketType.Flying:
-                                Flying flyingPacket = new Flying();
-                                flyingPacket.Read(Stream);
-                                OnPacketReceived(this, flyingPacket);
-                                break;
-                            case PacketType.PlayerPosition:
-                                PlayerPosition playerPositionPacket = new PlayerPosition();
-                                playerPositionPacket.Read(Stream);
-
-                                this.PlayerLocation.X = playerPositionPacket.X;
-                                this.PlayerLocation.Y = playerPositionPacket.Y;
-                                this.PlayerLocation.Z = playerPositionPacket.Z;
-                                this.PlayerLocation.Stance = playerPositionPacket.Stance;
-
-                                OnPacketReceived(this, playerPositionPacket);
-                                break;
-                            case PacketType.PlayerLook:
-                                PlayerLook playerLookPacket = new PlayerLook();
-                                playerLookPacket.Read(Stream);
-
-                                this.PlayerRotation.Pitch = playerLookPacket.Pitch;
-                                this.PlayerRotation.Yaw = playerLookPacket.Yaw;
-
-                                OnPacketReceived(this, playerLookPacket);
-                                break;
-                            case PacketType.PlayerLookMove:
-                                PlayerLookMove playerLookMovePacket = new PlayerLookMove();
-                                playerLookMovePacket.Read(Stream);
-
-                                this.PlayerLocation.X = playerLookMovePacket.X;
-                                this.PlayerLocation.Y = playerLookMovePacket.Y;
-                                this.PlayerLocation.Stance = playerLookMovePacket.Stance;
-                                this.PlayerLocation.Z = playerLookMovePacket.Z;
-                                this.PlayerRotation.Pitch = playerLookMovePacket.Pitch;
-                                this.PlayerRotation.Yaw = playerLookMovePacket.Yaw;
-                                this.OnGround = playerLookMovePacket.OnGround;
-                                OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));
-
-                                OnPacketReceived(this, playerLookMovePacket);
-                                break;
-                            case PacketType.BlockDig:
-                                BlockDig blockDigPacket = new BlockDig();
-                                blockDigPacket.Read(Stream);
-                                OnPacketReceived(this, blockDigPacket);
-                                break;
-                            case PacketType.Place:
-                                Place placePacket = new Place();
-                                placePacket.Read(Stream);
-                                OnPacketReceived(this, placePacket);
-                                break;
-                            case PacketType.BlockItemSwitch:
-                                BlockItemSwitch blockItemSwitchPacket = new BlockItemSwitch();
-                                blockItemSwitchPacket.Read(Stream);
-                                OnPacketReceived(this, blockItemSwitchPacket);
-                                break;
-                            case PacketType.ArmAnimation:
-                                ArmAnimation armAnimationPacket = new ArmAnimation();
-                                armAnimationPacket.Read(Stream);
-                                OnPacketReceived(this, armAnimationPacket);
-                                break;
-                            case PacketType.Action:
-                                Packets.Types.Action actionPacket = new Packets.Types.Action();
-                                actionPacket.Read(Stream);
-                                OnPacketReceived(this, actionPacket);
-                                break;
-                            case PacketType.NamedEntitySpawn:
-                                NamedEntitySpawn namedEntitySpawnPacket = new NamedEntitySpawn();
-                                namedEntitySpawnPacket.Read(Stream);
-
-                                NamedEntityType namedEntitySpawnEntity = new NamedEntityType()
-                                {
-                                    EntityID = namedEntitySpawnPacket.EntityID,
-                                    X = namedEntitySpawnPacket.X,
-                                    Y = namedEntitySpawnPacket.Y,
-                                    Z = namedEntitySpawnPacket.Z,
-                                    Pitch = namedEntitySpawnPacket.Pitch,
-                                    Rotation = namedEntitySpawnPacket.Rotation,
-                                    CurrentItem = namedEntitySpawnPacket.CurrentItem,
-                                    Name = namedEntitySpawnPacket.Name
-                                };
-                                this.Server.Entities.Add(namedEntitySpawnEntity);
-
-                                OnPacketReceived(this, namedEntitySpawnPacket);
-                                break;
-                            case PacketType.PickupSpawn:
-                                PickupSpawn pickupSpawnPacket = new PickupSpawn();
-                                pickupSpawnPacket.Read(Stream);
-
-                                PickupEntityType pickupSpawnEntity = new PickupEntityType()
-                                {
-                                    EntityID = pickupSpawnPacket.EntityID,
-                                    X = pickupSpawnPacket.X,
-                                    Y = pickupSpawnPacket.Y,
-                                    Z = pickupSpawnPacket.Z,
-                                    Pitch = pickupSpawnPacket.Pitch,
-                                    ItemID = pickupSpawnPacket.ItemID,
-                                    Count = pickupSpawnPacket.Count,
-                                    Rotation = pickupSpawnPacket.Rotation,
-                                    Secondary = pickupSpawnPacket.Secondary,
-                                    Roll = pickupSpawnPacket.Roll
-                                };
-                                this.Server.Entities.Add(pickupSpawnEntity);
-
-                                OnPacketReceived(this, pickupSpawnPacket);
-                                break;
-                            case PacketType.Collect:
-                                Collect collectPacket = new Collect();
-                                collectPacket.Read(Stream);
-                                OnPacketReceived(this, collectPacket);
-                                break;
-                            case PacketType.VehicleSpawn:
-                                VehicleSpawn vehicleSpawnPacket = new VehicleSpawn();
-                                vehicleSpawnPacket.Read(Stream);
-
-                                VehicleEntityType vehicleSpawnEntity = new VehicleEntityType()
-                                {
-                                    EntityID = vehicleSpawnPacket.EntityID,
-                                    X = vehicleSpawnPacket.X,
-                                    Y = vehicleSpawnPacket.Y,
-                                    Z = vehicleSpawnPacket.Z,
-                                    VehicleType = vehicleSpawnPacket.VehicleType
-                                };
-                                this.Server.Entities.Add(vehicleSpawnEntity);
-
-                                OnPacketReceived(this, vehicleSpawnPacket);
-                                break;
-                            case PacketType.MobSpawn:
-                                MobSpawn mobSpawnPacket = new MobSpawn();
-                                mobSpawnPacket.Read(Stream);
-
-                                MobEntityType mobSpawnEntity = new MobEntityType()
-                                {
-                                    EntityID = mobSpawnPacket.EntityID,
-                                    X = mobSpawnPacket.X,
-                                    Y = mobSpawnPacket.Y,
-                                    Z = mobSpawnPacket.Z,
-                                    Pitch = mobSpawnPacket.Pitch,
-                                    Yaw = mobSpawnPacket.Yaw,
-                                    MobType = mobSpawnPacket.MobType
-                                };
-                                this.Server.Entities.Add(mobSpawnEntity);
-
-                                OnPacketReceived(this, mobSpawnPacket);
-                                break;
-                            case PacketType.Painting:
-                                Painting paintingPacket = new Painting();
-                                paintingPacket.Read(Stream);
-                                OnPacketReceived(this, paintingPacket);
-                                break;
-                            case PacketType.Velocity:
-                                Velocity velocityPacket = new Velocity();
-                                velocityPacket.Read(Stream);
-                                OnPacketReceived(this, velocityPacket);
-                                break;
-                            case PacketType.DestroyEntity:
-                                DestroyEntity destroyEntityPacket = new DestroyEntity();
-                                destroyEntityPacket.Read(Stream);
-
-                                this.Server.Entities.Remove(destroyEntityPacket.EntityID);
-
-                                OnPacketReceived(this, destroyEntityPacket);
-                                break;
-                            case PacketType.Entity:
-                                Entity entityPacket = new Entity();
-                                entityPacket.Read(Stream);
-
-                                EntityType entityEntityType = new EntityType()
-                                {
-                                    EntityID = entityPacket.EntityID
-                                };
-                                this.Server.Entities.Add(entityEntityType);
-
-                                OnPacketReceived(this, entityPacket);
-                                break;
-                            case PacketType.EntityPosition:
-                                EntityPosition entityPositionPacket = new EntityPosition();
-                                entityPositionPacket.Read(Stream);
-
-                                EntityType entityPositonEntity = this.Server.Entities.GetFromId(entityPositionPacket.EntityID);
-                                if (entityPositonEntity == null) break;
-                                entityPositonEntity.X = entityPositionPacket.X;
-                                entityPositonEntity.Y = entityPositionPacket.Y;
-                                entityPositonEntity.Z = entityPositionPacket.Z;
-
-                                OnPacketReceived(this, entityPositionPacket);
-                                break;
-                            case PacketType.EntityLook:
-                                EntityLook entityLookPacket = new EntityLook();
-                                entityLookPacket.Read(Stream);
-
-                                EntityType entityLookEntity = this.Server.Entities.GetFromId(entityLookPacket.EntityID);
-                                if (entityLookEntity == null) break;
-                                entityLookEntity.Pitch = entityLookPacket.Pitch;
-                                entityLookEntity.Yaw = entityLookPacket.Yaw;
-
-                                OnPacketReceived(this, entityLookPacket);
-                                break;
-                            case PacketType.EntityLookMove:
-                                EntityLookMove entityLookMovePacket = new EntityLookMove();
-                                entityLookMovePacket.Read(Stream);
-
-                                EntityType entityLookMoveEntity = this.Server.Entities.GetFromId(entityLookMovePacket.EntityID);
-                                if (entityLookMoveEntity == null) break;
-                                entityLookMoveEntity.X = entityLookMovePacket.X;
-                                entityLookMoveEntity.Y = entityLookMovePacket.Y;
-                                entityLookMoveEntity.Z = entityLookMovePacket.Z;
-                                entityLookMoveEntity.Pitch = entityLookMovePacket.Pitch;
-                                entityLookMoveEntity.Yaw = entityLookMovePacket.Yaw;
-
-                                OnPacketReceived(this, entityLookMovePacket);
-                                break;
-                            case PacketType.EntityTeleport:
-                                EntityTeleport entityTeleportPacket = new EntityTeleport();
-                                entityTeleportPacket.Read(Stream);
-
-                                EntityType entityTeleportEntity = this.Server.Entities.GetFromId(entityTeleportPacket.EntityID);
-                                if (entityTeleportEntity == null) break;
-                                entityTeleportEntity.X = entityTeleportPacket.X;
-                                entityTeleportEntity.Y = entityTeleportPacket.Y;
-                                entityTeleportEntity.Z = entityTeleportPacket.Z;
-                                entityTeleportEntity.Pitch = entityTeleportPacket.Pitch;
-                                entityTeleportEntity.Yaw = entityTeleportPacket.Yaw;
-
-                                OnPacketReceived(this, entityTeleportPacket);
-                                break;
-                            case PacketType.Status:
-                                Status statusPacket = new Status();
-                                statusPacket.Read(Stream);
-                                OnPacketReceived(this, statusPacket);
-                                break;
-                            case PacketType.VehicleAttach:
-                                VehicleAttach vehicleAttachPacket = new VehicleAttach();
-                                vehicleAttachPacket.Read(Stream);
-                                OnPacketReceived(this, vehicleAttachPacket);
-                                break;
-                            /*case 0x28:
-                                StreamHelper.ReadInt(Stream);
-                                while ((id = (byte)Stream.ReadByte()) != 0x7f) { } //Metadata
-                                break;*/
-                            case PacketType.PreChunk:
-                                PreChunk preChunkPacket = new PreChunk();
-                                preChunkPacket.Read(Stream);
-
-                                this.Server.Chunks.AllocateChunk(preChunkPacket.X, preChunkPacket.Y);
-
-                                OnPacketReceived(this, preChunkPacket);
-                                break;
-                            case PacketType.MapChunk:
-                                MapChunk mapChunkPacket = new MapChunk();
-                                mapChunkPacket.Read(Stream);
-
-                                this.ProcessChunk(mapChunkPacket.X, mapChunkPacket.Y, mapChunkPacket.Z, mapChunkPacket.XSize, mapChunkPacket.YSize, mapChunkPacket.ZSize, mapChunkPacket.Chunk);
-
-                                OnPacketReceived(this, mapChunkPacket);
-                                break;
-                            case PacketType.MultiBlockChange:
-                                MultiBlockChange multiBlockChangePacket = new MultiBlockChange();
-                                multiBlockChangePacket.Read(Stream);
-                                OnPacketReceived(this, multiBlockChangePacket);
-                                break;
-                            case PacketType.BlockChange:
-                                BlockChange blockChangePacket = new BlockChange();
-                                blockChangePacket.Read(Stream);
-                                OnPacketReceived(this, blockChangePacket);
-                                break;
-                            case PacketType.Note:
-                                Note notePacket = new Note();
-                                notePacket.Read(Stream);
-                                OnPacketReceived(this, notePacket);
-                                break;
-                            case PacketType.Explosion:
-                                Explosion explosionPacket = new Explosion();
-                                explosionPacket.Read(Stream);
-                                OnPacketReceived(this, explosionPacket);
-                                break;
-                            case PacketType.WindowOpen:
-                                WindowOpen windowOpenPacket = new WindowOpen();
-                                windowOpenPacket.Read(Stream);
-                                OnPacketReceived(this, windowOpenPacket);
-                                break;
-                            case PacketType.WindowClose:
-                                WindowClose windowClosePacket = new WindowClose();
-                                windowClosePacket.Read(Stream);
-                                OnPacketReceived(this, windowClosePacket);
-                                break;
-                            case PacketType.WindowAction:
-                                WindowAction windowActionPacket = new WindowAction();
-                                windowActionPacket.Read(Stream);
-                                OnPacketReceived(this, windowActionPacket);
-                                break;
-                            case PacketType.WindowSlot:
-                                WindowSlot windowSlotPacket = new WindowSlot();
-                                windowSlotPacket.Read(Stream);
-                                OnPacketReceived(this, windowSlotPacket);
-                                break;
-                            case PacketType.Inventory:
-                                Inventory inventoryPacket = new Inventory();
-                                inventoryPacket.Read(Stream);
-                                OnPacketReceived(this, inventoryPacket);
-                                break;
-                            case PacketType.WindowProgress:
-                                WindowProgress windowProgressPacket = new WindowProgress();
-                                windowProgressPacket.Read(Stream);
-                                OnPacketReceived(this, windowProgressPacket);
-                                break;
-                            case PacketType.WindowToken:
-                                WindowToken windowTokenPacket = new WindowToken();
-                                windowTokenPacket.Read(Stream);
-                                OnPacketReceived(this, windowTokenPacket);
-                                break;
-                            case PacketType.Sign:
-                                Sign signPacket = new Sign();
-                                signPacket.Read(Stream);
-                                OnPacketReceived(this, signPacket);
-                                break;
-                            case PacketType.Quit:
-                                Quit quitPacket = new Quit();
-                                quitPacket.Read(Stream);
-                                Debug.Warning("Received disconnect packet. Reason: " + quitPacket.Reason);
-                                OnPacketReceived(this, quitPacket);
-                                break;
-                            default:
-                                //Debug.Warning("Unknown packet received. [" + (int)id + "]");
-                                break;
+                            }
+                            OnChatMessageReceived(this, new MinecraftClientChatEventArgs(chatUsername, chatMsgSplit[1]));
+                            OnPacketReceived(this, chatPacket);
                         }
-                    //}
-                    //catch (Exception e) { Debug.Warning(e); throw; }
+                        catch (IndexOutOfRangeException e) { }
+                        break;
+                    case PacketType.UpdateTime:
+                        UpdateTime updateTimePacket = new UpdateTime();
+                        updateTimePacket.Read(Stream);
+                        this.Server.Time = updateTimePacket.Time;
+                        OnPacketReceived(this, updateTimePacket);
+                        break;
+                    case PacketType.PlayerInventory:
+                        PlayerInventory playerInventoryPacket = new PlayerInventory();
+                        playerInventoryPacket.Read(Stream);
+                        OnPacketReceived(this, playerInventoryPacket);
+                        break;
+                    case PacketType.SpawnPosition:
+                        SpawnPosition spawnPositionPacket = new SpawnPosition();
+                        spawnPositionPacket.Read(Stream);
+
+                        this.PlayerLocation.X = spawnPositionPacket.X;
+                        this.PlayerLocation.Y = spawnPositionPacket.Y;
+                        this.PlayerLocation.Z = spawnPositionPacket.Z;
+
+                        OnPacketReceived(this, spawnPositionPacket);
+                        break;
+                    case PacketType.Use:
+                        Use usePacket = new Use();
+                        usePacket.Read(Stream);
+                        OnPacketReceived(this, usePacket);
+                        break;
+                    case PacketType.Health:
+                        Health healthPacket = new Health();
+                        healthPacket.Read(Stream);
+                        OnPacketReceived(this, healthPacket);
+                        break;
+                    case PacketType.Respawn:
+                        Respawn respawnPacket = new Respawn();
+                        respawnPacket.Read(Stream);
+                        OnPacketReceived(this, respawnPacket);
+                        break;
+                    case PacketType.Flying:
+                        Flying flyingPacket = new Flying();
+                        flyingPacket.Read(Stream);
+                        OnPacketReceived(this, flyingPacket);
+                        break;
+                    case PacketType.PlayerPosition:
+                        PlayerPosition playerPositionPacket = new PlayerPosition();
+                        playerPositionPacket.Read(Stream);
+
+                        /*this.PlayerLocation.X = playerPositionPacket.X;
+                        this.PlayerLocation.Y = playerPositionPacket.Y;
+                        this.PlayerLocation.Z = playerPositionPacket.Z;
+                        this.PlayerLocation.Stance = playerPositionPacket.Stance;*/
+
+                        OnPacketReceived(this, playerPositionPacket);
+                        break;
+                    case PacketType.PlayerLook:
+                        PlayerLook playerLookPacket = new PlayerLook();
+                        playerLookPacket.Read(Stream);
+
+                        /*this.PlayerRotation.Pitch = playerLookPacket.Pitch;
+                        this.PlayerRotation.Yaw = playerLookPacket.Yaw;*/
+
+                        OnPacketReceived(this, playerLookPacket);
+                        break;
+                    case PacketType.PlayerLookMove:
+                        PlayerLookMove playerLookMovePacket = new PlayerLookMove();
+                        playerLookMovePacket.Read(Stream);
+
+                        /*this.PlayerLocation.X = playerLookMovePacket.X;
+                        this.PlayerLocation.Y = playerLookMovePacket.Y;
+                        this.PlayerLocation.Stance = playerLookMovePacket.Stance;
+                        this.PlayerLocation.Z = playerLookMovePacket.Z;
+                        this.PlayerRotation.Pitch = playerLookMovePacket.Pitch;
+                        this.PlayerRotation.Yaw = playerLookMovePacket.Yaw;
+                        this.OnGround = playerLookMovePacket.OnGround;
+                        OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));*/
+
+                        OnPacketReceived(this, playerLookMovePacket);
+                        break;
+                    case PacketType.BlockDig:
+                        BlockDig blockDigPacket = new BlockDig();
+                        blockDigPacket.Read(Stream);
+                        OnPacketReceived(this, blockDigPacket);
+                        break;
+                    case PacketType.Place:
+                        Place placePacket = new Place();
+                        placePacket.Read(Stream);
+                        OnPacketReceived(this, placePacket);
+                        break;
+                    case PacketType.BlockItemSwitch:
+                        BlockItemSwitch blockItemSwitchPacket = new BlockItemSwitch();
+                        blockItemSwitchPacket.Read(Stream);
+                        OnPacketReceived(this, blockItemSwitchPacket);
+                        break;
+                    case PacketType.ArmAnimation:
+                        ArmAnimation armAnimationPacket = new ArmAnimation();
+                        armAnimationPacket.Read(Stream);
+                        OnPacketReceived(this, armAnimationPacket);
+                        break;
+                    case PacketType.Action:
+                        Packets.Types.Action actionPacket = new Packets.Types.Action();
+                        actionPacket.Read(Stream);
+                        OnPacketReceived(this, actionPacket);
+                        break;
+                    case PacketType.NamedEntitySpawn:
+                        NamedEntitySpawn namedEntitySpawnPacket = new NamedEntitySpawn();
+                        namedEntitySpawnPacket.Read(Stream);
+
+                        NamedEntityType namedEntitySpawnEntity = new NamedEntityType()
+                        {
+                            EntityID = namedEntitySpawnPacket.EntityID,
+                            X = ((double)namedEntitySpawnPacket.X / 32D),
+                            Y = ((double)namedEntitySpawnPacket.Y / 32D),
+                            Z = ((double)namedEntitySpawnPacket.Z / 32D),
+                            ServerX = namedEntitySpawnPacket.X,
+                            ServerY = namedEntitySpawnPacket.Y,
+                            ServerZ = namedEntitySpawnPacket.Z,
+                            Pitch = ((float)namedEntitySpawnPacket.Pitch * 360) / 256F,
+                            Rotation = ((float)namedEntitySpawnPacket.Rotation * 360) / 256F,
+                            CurrentItem = namedEntitySpawnPacket.CurrentItem,
+                            Name = namedEntitySpawnPacket.Name
+                        };
+                        this.Server.Entities.Add(namedEntitySpawnEntity);
+
+                        OnPacketReceived(this, namedEntitySpawnPacket);
+                        break;
+                    case PacketType.PickupSpawn:
+                        PickupSpawn pickupSpawnPacket = new PickupSpawn();
+                        pickupSpawnPacket.Read(Stream);
+
+                        PickupEntityType pickupSpawnEntity = new PickupEntityType()
+                        {
+                            EntityID = pickupSpawnPacket.EntityID,
+                            X = pickupSpawnPacket.X,
+                            Y = pickupSpawnPacket.Y,
+                            Z = pickupSpawnPacket.Z,
+                            Pitch = pickupSpawnPacket.Pitch,
+                            ItemID = pickupSpawnPacket.ItemID,
+                            Count = pickupSpawnPacket.Count,
+                            Rotation = pickupSpawnPacket.Rotation,
+                            Secondary = pickupSpawnPacket.Secondary,
+                            Roll = pickupSpawnPacket.Roll
+                        };
+                        this.Server.Entities.Add(pickupSpawnEntity);
+
+                        OnPacketReceived(this, pickupSpawnPacket);
+                        break;
+                    case PacketType.Collect:
+                        Collect collectPacket = new Collect();
+                        collectPacket.Read(Stream);
+                        OnPacketReceived(this, collectPacket);
+                        break;
+                    case PacketType.VehicleSpawn:
+                        VehicleSpawn vehicleSpawnPacket = new VehicleSpawn();
+                        vehicleSpawnPacket.Read(Stream);
+
+                        VehicleEntityType vehicleSpawnEntity = new VehicleEntityType()
+                        {
+                            EntityID = vehicleSpawnPacket.EntityID,
+                            X = vehicleSpawnPacket.X,
+                            Y = vehicleSpawnPacket.Y,
+                            Z = vehicleSpawnPacket.Z,
+                            VehicleType = vehicleSpawnPacket.VehicleType
+                        };
+                        this.Server.Entities.Add(vehicleSpawnEntity);
+
+                        OnPacketReceived(this, vehicleSpawnPacket);
+                        break;
+                    case PacketType.MobSpawn:
+                        MobSpawn mobSpawnPacket = new MobSpawn();
+                        mobSpawnPacket.Read(Stream);
+
+                        MobEntityType mobSpawnEntity = new MobEntityType()
+                        {
+                            EntityID = mobSpawnPacket.EntityID,
+                            X = mobSpawnPacket.X,
+                            Y = mobSpawnPacket.Y,
+                            Z = mobSpawnPacket.Z,
+                            Pitch = mobSpawnPacket.Pitch,
+                            Yaw = mobSpawnPacket.Yaw,
+                            MobType = mobSpawnPacket.MobType
+                        };
+                        this.Server.Entities.Add(mobSpawnEntity);
+
+                        OnPacketReceived(this, mobSpawnPacket);
+                        break;
+                    case PacketType.Painting:
+                        Painting paintingPacket = new Painting();
+                        paintingPacket.Read(Stream);
+                        OnPacketReceived(this, paintingPacket);
+                        break;
+                    case PacketType.Velocity:
+                        Velocity velocityPacket = new Velocity();
+                        velocityPacket.Read(Stream);
+                        OnPacketReceived(this, velocityPacket);
+                        break;
+                    case PacketType.DestroyEntity:
+                        DestroyEntity destroyEntityPacket = new DestroyEntity();
+                        destroyEntityPacket.Read(Stream);
+
+                        this.Server.Entities.Remove(destroyEntityPacket.EntityID);
+
+                        OnPacketReceived(this, destroyEntityPacket);
+                        break;
+                    case PacketType.Entity:
+                        Entity entityPacket = new Entity();
+                        entityPacket.Read(Stream);
+
+                        EntityType entityEntityType = new EntityType()
+                        {
+                            EntityID = entityPacket.EntityID
+                        };
+                        this.Server.Entities.Add(entityEntityType);
+
+                        OnPacketReceived(this, entityPacket);
+                        break;
+                    case PacketType.EntityPosition:
+                        EntityPosition entityPositionPacket = new EntityPosition();
+                        entityPositionPacket.Read(Stream);
+
+                        EntityType entityPositonEntity = this.Server.Entities.GetFromId(entityPositionPacket.EntityID);
+                        if (entityPositonEntity == null) break;
+                        entityPositonEntity.X = entityPositionPacket.X;
+                        entityPositonEntity.Y = entityPositionPacket.Y;
+                        entityPositonEntity.Z = entityPositionPacket.Z;
+
+                        OnPacketReceived(this, entityPositionPacket);
+                        break;
+                    case PacketType.EntityLook:
+                        EntityLook entityLookPacket = new EntityLook();
+                        entityLookPacket.Read(Stream);
+
+                        EntityType entityLookEntity = this.Server.Entities.GetFromId(entityLookPacket.EntityID);
+                        if (entityLookEntity == null) break;
+                        entityLookEntity.Pitch = entityLookPacket.Pitch;
+                        entityLookEntity.Yaw = entityLookPacket.Yaw;
+
+                        OnPacketReceived(this, entityLookPacket);
+                        break;
+                    case PacketType.EntityLookMove:
+                        EntityLookMove entityLookMovePacket = new EntityLookMove();
+                        entityLookMovePacket.Read(Stream);
+
+                        EntityType entityLookMoveEntity = this.Server.Entities.GetFromId(entityLookMovePacket.EntityID);
+                        if (entityLookMoveEntity == null) break;
+                        entityLookMoveEntity.X = entityLookMovePacket.X;
+                        entityLookMoveEntity.Y = entityLookMovePacket.Y;
+                        entityLookMoveEntity.Z = entityLookMovePacket.Z;
+                        entityLookMoveEntity.Pitch = entityLookMovePacket.Pitch;
+                        entityLookMoveEntity.Yaw = entityLookMovePacket.Yaw;
+
+                        OnPacketReceived(this, entityLookMovePacket);
+                        break;
+                    case PacketType.EntityTeleport:
+                        EntityTeleport entityTeleportPacket = new EntityTeleport();
+                        entityTeleportPacket.Read(Stream);
+
+                        EntityType entityTeleportEntity = this.Server.Entities.GetFromId(entityTeleportPacket.EntityID);
+                        if (entityTeleportEntity == null) break;
+                        entityTeleportEntity.ServerX = entityTeleportPacket.X;
+                        entityTeleportEntity.ServerY = entityTeleportPacket.Y;
+                        entityTeleportEntity.ServerZ = entityTeleportPacket.Z;
+
+                        entityTeleportEntity.SetPosition((double)entityTeleportPacket.X / 32D,
+                            (double)(entityTeleportPacket.Y / 32D) + 0.015625D,
+                            (double)entityTeleportPacket.Z / 32D);
+                        entityTeleportEntity.SetRotation(((float)entityTeleportPacket.Yaw * 360) / 256F,
+                            ((float)entityTeleportPacket.Pitch * 360) / 256F);
+
+                        OnPacketReceived(this, entityTeleportPacket);
+                        break;
+                    case PacketType.Status:
+                        Status statusPacket = new Status();
+                        statusPacket.Read(Stream);
+                        OnPacketReceived(this, statusPacket);
+                        break;
+                    case PacketType.VehicleAttach:
+                        VehicleAttach vehicleAttachPacket = new VehicleAttach();
+                        vehicleAttachPacket.Read(Stream);
+                        OnPacketReceived(this, vehicleAttachPacket);
+                        break;
+                    case PacketType.EntityMetadata:
+                        EntityMetadata entityMetadataPacket = new EntityMetadata();
+                        entityMetadataPacket.Read(Stream);
+                        OnPacketReceived(this, entityMetadataPacket);
+                        break;
+                    case PacketType.PreChunk:
+                        PreChunk preChunkPacket = new PreChunk();
+                        preChunkPacket.Read(Stream);
+
+                        this.Server.Chunks.AllocateChunk(preChunkPacket.X, preChunkPacket.Y);
+
+                        OnPacketReceived(this, preChunkPacket);
+                        break;
+                    case PacketType.MapChunk:
+                        MapChunk mapChunkPacket = new MapChunk();
+                        mapChunkPacket.Read(Stream);
+
+                        this.ProcessChunk(mapChunkPacket.X, mapChunkPacket.Y, mapChunkPacket.Z, mapChunkPacket.XSize, mapChunkPacket.YSize, mapChunkPacket.ZSize, mapChunkPacket.Chunk);
+
+                        OnPacketReceived(this, mapChunkPacket);
+                        break;
+                    case PacketType.MultiBlockChange:
+                        MultiBlockChange multiBlockChangePacket = new MultiBlockChange();
+                        multiBlockChangePacket.Read(Stream);
+                        OnPacketReceived(this, multiBlockChangePacket);
+                        break;
+                    case PacketType.BlockChange:
+                        BlockChange blockChangePacket = new BlockChange();
+                        blockChangePacket.Read(Stream);
+                        OnPacketReceived(this, blockChangePacket);
+                        break;
+                    case PacketType.Note:
+                        Note notePacket = new Note();
+                        notePacket.Read(Stream);
+                        OnPacketReceived(this, notePacket);
+                        break;
+                    case PacketType.Explosion:
+                        Explosion explosionPacket = new Explosion();
+                        explosionPacket.Read(Stream);
+                        OnPacketReceived(this, explosionPacket);
+                        break;
+                    case PacketType.WindowOpen:
+                        WindowOpen windowOpenPacket = new WindowOpen();
+                        windowOpenPacket.Read(Stream);
+                        OnPacketReceived(this, windowOpenPacket);
+                        break;
+                    case PacketType.WindowClose:
+                        WindowClose windowClosePacket = new WindowClose();
+                        windowClosePacket.Read(Stream);
+                        OnPacketReceived(this, windowClosePacket);
+                        break;
+                    case PacketType.WindowAction:
+                        WindowAction windowActionPacket = new WindowAction();
+                        windowActionPacket.Read(Stream);
+                        OnPacketReceived(this, windowActionPacket);
+                        break;
+                    case PacketType.WindowSlot:
+                        WindowSlot windowSlotPacket = new WindowSlot();
+                        windowSlotPacket.Read(Stream);
+                        OnPacketReceived(this, windowSlotPacket);
+                        break;
+                    case PacketType.Inventory:
+                        Inventory inventoryPacket = new Inventory();
+                        inventoryPacket.Read(Stream);
+                        OnPacketReceived(this, inventoryPacket);
+                        break;
+                    case PacketType.WindowProgress:
+                        WindowProgress windowProgressPacket = new WindowProgress();
+                        windowProgressPacket.Read(Stream);
+                        OnPacketReceived(this, windowProgressPacket);
+                        break;
+                    case PacketType.WindowToken:
+                        WindowToken windowTokenPacket = new WindowToken();
+                        windowTokenPacket.Read(Stream);
+                        OnPacketReceived(this, windowTokenPacket);
+                        break;
+                    case PacketType.Sign:
+                        Sign signPacket = new Sign();
+                        signPacket.Read(Stream);
+                        OnPacketReceived(this, signPacket);
+                        break;
+                    case PacketType.Quit:
+                        Quit quitPacket = new Quit();
+                        quitPacket.Read(Stream);
+                        Debug.Warning("Received disconnect packet. Reason: " + quitPacket.Reason);
+                        OnPacketReceived(this, quitPacket);
+                        break;
+                    default:
+                        Debug.Warning("Unknown packet received. [" + id.ToString("X2") + "]");
+                        break;
                 }
-            //}
-            //catch (Exception e) { Debug.Severe(new MinecraftClientGeneralException(e)); throw; }
+            }
 
             Connected = false;
 
@@ -719,15 +724,15 @@ namespace mcsharpbot.communication
             OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));
         }
 
-        Location PreviousLocation;
-        Rotation PreviousRotation;
+        Location PreviousLocation = new Location();
+        Rotation PreviousRotation = new Rotation();
 
         void PositionTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (PreviousLocation != this.PlayerLocation && PreviousRotation != this.PlayerRotation)
+            if (!PreviousLocation.Equals(this.PlayerLocation) && !PreviousRotation.Equals(this.PlayerRotation))
             {
-                PreviousLocation = this.PlayerLocation;
-                PreviousRotation = this.PlayerRotation;
+                PreviousLocation = (Location)this.PlayerLocation.Clone();
+                PreviousRotation = (Rotation)this.PlayerRotation.Clone();
                 PlayerLookMove lookMove = new PlayerLookMove()
                 {
                     X = this.PlayerLocation.X,
@@ -741,9 +746,9 @@ namespace mcsharpbot.communication
                 this.SendPacket(lookMove);
                 return;
             }
-            if (PreviousLocation != this.PlayerLocation)
+            if (!PreviousLocation.Equals(this.PlayerLocation))
             {
-                PreviousLocation = this.PlayerLocation;
+                PreviousLocation = (Location)this.PlayerLocation.Clone();
                 PlayerPosition position = new PlayerPosition()
                 {
                     X = this.PlayerLocation.X,
@@ -755,9 +760,9 @@ namespace mcsharpbot.communication
                 this.SendPacket(position);
                 return;
             }
-            if (PreviousRotation != this.PlayerRotation)
+            if (!PreviousRotation.Equals(this.PlayerRotation))
             {
-                PreviousRotation = this.PlayerRotation;
+                PreviousRotation = (Rotation)this.PlayerRotation.Clone();
                 PlayerLook look = new PlayerLook()
                 {
                     OnGround = true,

@@ -5,10 +5,10 @@ using System.Text;
 
 namespace mcsharpbot.communication.Entities
 {
-    class NamedEntityType : EntityType
+    public class NamedEntityType : EntityType
     {
         public string Name;
-        public byte Rotation;
+        public float Rotation;
         public short CurrentItem;
     }
 }

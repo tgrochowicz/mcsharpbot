@@ -19,7 +19,15 @@ namespace mcsharpbot.bots
             {
                 if (args.Message.Trim() == "move")
                 {
-                    Connection.PlayerRotation.Yaw = 150;
+                    Connection.PlayerLocation.X = Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().X;
+                    Connection.PlayerLocation.Y = Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().Y;
+                    Connection.PlayerLocation.Z = Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().Z;
+                }
+                if (args.Message.Trim() == "movef")
+                {
+                    Connection.PlayerLocation.X = Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().ServerX;
+                    Connection.PlayerLocation.Y = Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().ServerY;
+                    Connection.PlayerLocation.Z = Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().ServerZ;
                 }
             }
         }

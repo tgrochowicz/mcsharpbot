@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using System.Collections;
 
 namespace mcsharpbot.communication.Packets.Types
 {
@@ -20,6 +21,7 @@ namespace mcsharpbot.communication.Packets.Types
         public int Z;
         public byte Yaw;
         public byte Pitch;
+        public ArrayList Metadata;
 
         public void Read(NetworkStream stream)
         {
@@ -30,6 +32,7 @@ namespace mcsharpbot.communication.Packets.Types
             Z = StreamHelper.ReadInt(stream);
             Yaw = (byte)stream.ReadByte();
             Pitch = (byte)stream.ReadByte();
+            Metadata = DataWatcher.Read(stream);
         }
 
         public void Write(NetworkStream stream)
@@ -43,6 +46,7 @@ namespace mcsharpbot.communication.Packets.Types
             StreamHelper.WriteInt(stream, this.Z);
             stream.WriteByte(this.Yaw);
             stream.WriteByte(this.Pitch);
+            DataWatcher.Write(this.Metadata, stream);
 
             stream.Flush();
         }
