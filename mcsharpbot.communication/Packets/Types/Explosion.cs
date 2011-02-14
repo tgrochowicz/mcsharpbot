@@ -51,13 +51,13 @@ namespace mcsharpbot.communication.Packets.Types
             int i = (int)this.Unknown1;
             int j = (int)this.Unknown2;
             int k = (int)this.Unknown3;
-            byte j1;
+            sbyte j1;
             for (IEnumerator<ChunkPosition> iter = this.Unknown5.GetEnumerator(); iter.MoveNext(); stream.WriteByte(j1))
             {
                 ChunkPosition chunkpos = iter.Current;
                 int l = chunkpos.X - i;
                 int i1 = chunkpos.Y - j;
-                j1 = (byte)(chunkpos.Z - k);
+                j1 = (sbyte)(chunkpos.Z - k);
                 stream.WriteByte((byte)l);
                 stream.WriteByte((byte)i1);
             }

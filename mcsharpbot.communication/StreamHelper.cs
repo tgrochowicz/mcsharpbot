@@ -27,7 +27,7 @@ namespace mcsharpbot.communication
 
         public static double ReadDouble(Stream s)
         {
-            return new BinaryReader(s).ReadDouble();
+            return BitConverter.Int64BitsToDouble(ReadLong(s));
         }
 
         public static float ReadFloat(Stream s)
@@ -93,7 +93,7 @@ namespace mcsharpbot.communication
 
         public static void WriteDouble(Stream s, double d)
         {
-            new BinaryWriter(s).Write(d);
+            WriteLong(s, BitConverter.DoubleToInt64Bits(d));
         }
 
         public static void WriteFloat(Stream s, float f)

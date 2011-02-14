@@ -53,6 +53,7 @@
     <Compile Include="Entities\EntityCollection.cs" />
     <Compile Include="Entities\EntityType.cs" />
     <Compile Include="Entities\PickupEntityType.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="MapManager.cs" />
     <Compile Include="MCServerConnection.cs" />

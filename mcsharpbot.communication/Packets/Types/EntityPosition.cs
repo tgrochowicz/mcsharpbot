@@ -14,22 +14,22 @@ namespace mcsharpbot.communication.Packets.Types
         }
 
         public int EntityID;
-        public byte X;
-        public byte Y;
-        public byte Z;
+        public sbyte X;
+        public sbyte Y;
+        public sbyte Z;
 
         public void Read(NetworkStream stream)
         {
             EntityID = StreamHelper.ReadInt(stream);
-            X = (byte)stream.ReadByte();
-            Y = (byte)stream.ReadByte();
-            Z = (byte)stream.ReadByte();
+            X = (sbyte)stream.ReadByte();
+            Y = (sbyte)stream.ReadByte();
+            Z = (sbyte)stream.ReadByte();
         }
 
         public void Write(NetworkStream stream)
         {
             stream.WriteByte((byte)this.Type);
-
+            
             StreamHelper.WriteInt(stream, this.EntityID);
             stream.WriteByte(this.X);
             stream.WriteByte(this.Y);

@@ -14,20 +14,20 @@ namespace mcsharpbot.communication.Packets.Types
         }
 
         public int EntityID;
-        public byte X;
-        public byte Y;
-        public byte Z;
-        public byte Yaw;
-        public byte Pitch;
+        public sbyte X;
+        public sbyte Y;
+        public sbyte Z;
+        public sbyte Yaw;
+        public sbyte Pitch;
 
         public void Read(NetworkStream stream)
         {
             EntityID = StreamHelper.ReadInt(stream);
-            X = (byte)stream.ReadByte();
-            Y = (byte)stream.ReadByte();
-            Z = (byte)stream.ReadByte();
-            Yaw = (byte)stream.ReadByte();
-            Pitch = (byte)stream.ReadByte();
+            X = (sbyte)stream.ReadByte();
+            Y = (sbyte)stream.ReadByte();
+            Z = (sbyte)stream.ReadByte();
+            Yaw = (sbyte)stream.ReadByte();
+            Pitch = (sbyte)stream.ReadByte();
         }
 
         public void Write(NetworkStream stream)

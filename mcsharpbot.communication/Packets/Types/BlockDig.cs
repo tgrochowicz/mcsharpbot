@@ -13,17 +13,17 @@ namespace mcsharpbot.communication.Packets.Types
             get { return PacketType.BlockDig; }
         }
 
-        public byte Status;
+        public int Status;
         public int X;
-        public byte Y;
+        public int Y;
         public int Z;
         public Face FaceType;
 
         public void Read(NetworkStream stream)
         {
-            Status = (byte)stream.ReadByte();
+            Status = stream.ReadByte();
             X = StreamHelper.ReadInt(stream);
-            Y = (byte)stream.ReadByte();
+            Y = stream.ReadByte();
             Z = StreamHelper.ReadInt(stream);
             FaceType = (Face)stream.ReadByte();
         }
@@ -32,9 +32,9 @@ namespace mcsharpbot.communication.Packets.Types
         {
             stream.WriteByte((byte)this.Type);
 
-            stream.WriteByte(this.Status);
+            stream.WriteByte((byte)this.Status);
             StreamHelper.WriteInt(stream, this.X);
-            stream.WriteByte(this.Y);
+            stream.WriteByte((byte)this.Y);
             StreamHelper.WriteInt(stream, this.Z);
             stream.WriteByte((byte)this.FaceType);
 

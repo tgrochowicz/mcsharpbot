@@ -14,7 +14,7 @@ namespace mcsharpbot.communication.Packets.Types
         }
 
         public int X;
-        public byte Y;
+        public short Y;
         public int Z;
         public InstrumentType Instrument;
         public byte Pitch;
@@ -22,7 +22,7 @@ namespace mcsharpbot.communication.Packets.Types
         public void Read(NetworkStream stream)
         {
             X = StreamHelper.ReadInt(stream);
-            Y = (byte)stream.ReadByte();
+            Y = StreamHelper.ReadShort(stream);
             Z = StreamHelper.ReadInt(stream);
             Instrument = (InstrumentType)stream.ReadByte();
             Pitch = (byte)stream.ReadByte();
@@ -33,7 +33,7 @@ namespace mcsharpbot.communication.Packets.Types
             stream.WriteByte((byte)this.Type);
 
             StreamHelper.WriteInt(stream, this.X);
-            stream.WriteByte(this.Y);
+            StreamHelper.WriteShort(stream, this.Y);
             StreamHelper.WriteInt(stream, this.Z);
             stream.WriteByte((byte)Instrument);
             stream.WriteByte(this.Pitch);

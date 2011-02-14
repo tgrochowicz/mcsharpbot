@@ -17,8 +17,8 @@ namespace mcsharpbot.communication.Packets.Types
         public int X;
         public int Y;
         public int Z;
-        public byte Yaw;
-        public byte Pitch;
+        public sbyte Yaw;
+        public sbyte Pitch;
 
         public void Read(NetworkStream stream)
         {
@@ -26,8 +26,8 @@ namespace mcsharpbot.communication.Packets.Types
             X = StreamHelper.ReadInt(stream);
             Y = StreamHelper.ReadInt(stream);
             Z = StreamHelper.ReadInt(stream);
-            Yaw = (byte)stream.ReadByte();
-            Pitch = (byte)stream.ReadByte();
+            Yaw = (sbyte)stream.ReadByte();
+            Pitch = (sbyte)stream.ReadByte();
         }
 
         public void Write(NetworkStream stream)

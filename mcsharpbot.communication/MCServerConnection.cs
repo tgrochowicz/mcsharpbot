@@ -67,6 +67,17 @@ namespace mcsharpbot.communication
             }
         }
 
+        public Location PlayerSpawn
+        {
+            get 
+            {
+                return _playerSpawn;
+            }
+            set 
+            {
+                _playerSpawn = value;
+            }
+        }
         public IPacket LastReceived
         {
             get { return this.Inbox.Last(); }
@@ -75,6 +86,7 @@ namespace mcsharpbot.communication
         private int EntityID;
         private string SessionID;
         private Location _playerLocation;
+        private Location _playerSpawn;
         private Rotation _playerRotation;
         private bool _connected, OnGround;
 
@@ -89,6 +101,8 @@ namespace mcsharpbot.communication
 
         public Thread DataThread;
         private bool disposed = false;
+
+        private bool PositionTimerStarted = false;
         private System.Timers.Timer PositionTimer;
 
         private List<IPacket> Inbox = new List<IPacket>();
@@ -146,8 +160,6 @@ namespace mcsharpbot.communication
 
             PositionTimer = new System.Timers.Timer(100);
             PositionTimer.Elapsed += new ElapsedEventHandler(PositionTimer_Elapsed);
-            PositionTimer.Enabled = true;
-            PositionTimer.Start();
         }
 
 
@@ -198,9 +210,7 @@ namespace mcsharpbot.communication
                         SpawnPosition spawnPositionPacket = new SpawnPosition();
                         spawnPositionPacket.Read(Stream);
 
-                        this.PlayerLocation.X = spawnPositionPacket.X;
-                        this.PlayerLocation.Y = spawnPositionPacket.Y;
-                        this.PlayerLocation.Z = spawnPositionPacket.Z;
+                        this.PlayerSpawn = new Location(spawnPositionPacket.X, spawnPositionPacket.Y, spawnPositionPacket.Z, spawnPositionPacket.Y + 1.65D);
 
                         OnPacketReceived(this, spawnPositionPacket);
                         break;
@@ -228,10 +238,11 @@ namespace mcsharpbot.communication
                         PlayerPosition playerPositionPacket = new PlayerPosition();
                         playerPositionPacket.Read(Stream);
 
-                        /*this.PlayerLocation.X = playerPositionPacket.X;
+                        this.PlayerLocation.X = playerPositionPacket.X;
                         this.PlayerLocation.Y = playerPositionPacket.Y;
                         this.PlayerLocation.Z = playerPositionPacket.Z;
-                        this.PlayerLocation.Stance = playerPositionPacket.Stance;*/
+                        this.PlayerLocation.Stance = playerPositionPacket.Stance;
+                        this.SendPacket(playerPositionPacket);
 
                         OnPacketReceived(this, playerPositionPacket);
                         break;
@@ -239,8 +250,9 @@ namespace mcsharpbot.communication
                         PlayerLook playerLookPacket = new PlayerLook();
                         playerLookPacket.Read(Stream);
 
-                        /*this.PlayerRotation.Pitch = playerLookPacket.Pitch;
-                        this.PlayerRotation.Yaw = playerLookPacket.Yaw;*/
+                        this.PlayerRotation.Pitch = playerLookPacket.Pitch;
+                        this.PlayerRotation.Yaw = playerLookPacket.Yaw;
+                        this.SendPacket(playerLookPacket);
 
                         OnPacketReceived(this, playerLookPacket);
                         break;
@@ -248,14 +260,21 @@ namespace mcsharpbot.communication
                         PlayerLookMove playerLookMovePacket = new PlayerLookMove();
                         playerLookMovePacket.Read(Stream);
 
-                        /*this.PlayerLocation.X = playerLookMovePacket.X;
+                        this.PlayerLocation.X = playerLookMovePacket.X;
                         this.PlayerLocation.Y = playerLookMovePacket.Y;
                         this.PlayerLocation.Stance = playerLookMovePacket.Stance;
                         this.PlayerLocation.Z = playerLookMovePacket.Z;
                         this.PlayerRotation.Pitch = playerLookMovePacket.Pitch;
                         this.PlayerRotation.Yaw = playerLookMovePacket.Yaw;
                         this.OnGround = playerLookMovePacket.OnGround;
-                        OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));*/
+                        OnPlayerLocationChanged(this, new MinecraftClientLocationEventArgs(this.PlayerLocation));
+                        if (!PositionTimerStarted)
+                        {
+                            PositionTimerStarted = true;
+                            PositionTimer.Start();
+                        }
+
+                        this.SendPacket(playerLookMovePacket);
 
                         OnPacketReceived(this, playerLookMovePacket);
                         break;
@@ -402,9 +421,14 @@ namespace mcsharpbot.communication
 
                         EntityType entityPositonEntity = this.Server.Entities.GetFromId(entityPositionPacket.EntityID);
                         if (entityPositonEntity == null) break;
-                        entityPositonEntity.X = entityPositionPacket.X;
-                        entityPositonEntity.Y = entityPositionPacket.Y;
-                        entityPositonEntity.Z = entityPositionPacket.Z;
+                        entityPositonEntity.ServerX += entityPositionPacket.X;
+                        entityPositonEntity.ServerY += entityPositionPacket.Y;
+                        entityPositonEntity.ServerZ += entityPositionPacket.Z;
+
+                        double entityPositionX = (double)(entityPositonEntity.ServerX) / 32D;
+                        double entityPositionY = ((double)(entityPositonEntity.ServerY) / 32D) + 0.015625D;
+                        double entityPositionZ = (double)(entityPositonEntity.ServerZ) / 32D;
+                        entityPositonEntity.SetPosition(entityPositionX, entityPositionY, entityPositionZ);
 
                         OnPacketReceived(this, entityPositionPacket);
                         break;
@@ -414,8 +438,8 @@ namespace mcsharpbot.communication
 
                         EntityType entityLookEntity = this.Server.Entities.GetFromId(entityLookPacket.EntityID);
                         if (entityLookEntity == null) break;
-                        entityLookEntity.Pitch = entityLookPacket.Pitch;
-                        entityLookEntity.Yaw = entityLookPacket.Yaw;
+                        entityLookEntity.Pitch = (float)(entityLookPacket.Pitch * 360) / 256F;
+                        entityLookEntity.Yaw = (float)(entityLookPacket.Yaw * 360) / 256F;
 
                         OnPacketReceived(this, entityLookPacket);
                         break;
@@ -425,11 +449,16 @@ namespace mcsharpbot.communication
 
                         EntityType entityLookMoveEntity = this.Server.Entities.GetFromId(entityLookMovePacket.EntityID);
                         if (entityLookMoveEntity == null) break;
-                        entityLookMoveEntity.X = entityLookMovePacket.X;
-                        entityLookMoveEntity.Y = entityLookMovePacket.Y;
-                        entityLookMoveEntity.Z = entityLookMovePacket.Z;
-                        entityLookMoveEntity.Pitch = entityLookMovePacket.Pitch;
-                        entityLookMoveEntity.Yaw = entityLookMovePacket.Yaw;
+                        entityLookMoveEntity.ServerX += entityLookMovePacket.X;
+                        entityLookMoveEntity.ServerY += entityLookMovePacket.Y;
+                        entityLookMoveEntity.ServerZ += entityLookMovePacket.Z;
+                        entityLookMoveEntity.Pitch = (float)(entityLookMovePacket.Pitch * 360) / 256F;
+                        entityLookMoveEntity.Yaw = (float)(entityLookMovePacket.Yaw * 360) / 256F;
+
+                        double entityLookMoveX = (double)(entityLookMoveEntity.ServerX) / 32D;
+                        double entityLookMoveY = ((double)(entityLookMoveEntity.ServerY) / 32D) + 0.015625D;
+                        double entityLookMoveZ = (double)(entityLookMoveEntity.ServerZ) / 32D;
+                        entityLookMoveEntity.SetPosition(entityLookMoveX, entityLookMoveY, entityLookMoveZ);
 
                         OnPacketReceived(this, entityLookMovePacket);
                         break;
@@ -736,9 +765,9 @@ namespace mcsharpbot.communication
                 PlayerLookMove lookMove = new PlayerLookMove()
                 {
                     X = this.PlayerLocation.X,
-                    Y = this.PlayerLocation.Y,
+                    Y = this.PlayerLocation.Y - 1.6200000047683716D,
                     Z = this.PlayerLocation.Z,
-                    Stance = this.PlayerLocation.Stance,
+                    Stance = this.PlayerLocation.Y + 0.015625D,
                     Pitch = this.PlayerRotation.Pitch,
                     Yaw = this.PlayerRotation.Yaw,
                     OnGround = true
@@ -752,9 +781,9 @@ namespace mcsharpbot.communication
                 PlayerPosition position = new PlayerPosition()
                 {
                     X = this.PlayerLocation.X,
-                    Y = this.PlayerLocation.Y,
+                    Y = this.PlayerLocation.Y - 1.6200000047683716D,
                     Z = this.PlayerLocation.Z,
-                    Stance = this.PlayerLocation.Stance,
+                    Stance = this.PlayerLocation.Y + 0.015625D,
                     OnGround = true
                 };
                 this.SendPacket(position);

@@ -14,18 +14,18 @@ namespace mcsharpbot.communication.Packets.Types
         }
 
         public int X;
-        public byte Y;
+        public int Y;
         public int Z;
-        public byte BlockType;
-        public byte Metadata;
+        public int BlockType;
+        public int Metadata;
 
         public void Read(NetworkStream stream)
         {
             X = StreamHelper.ReadInt(stream);
-            Y = (byte)stream.ReadByte();
+            Y = stream.ReadByte();
             Z = StreamHelper.ReadInt(stream);
-            BlockType = (byte)stream.ReadByte();
-            Metadata = (byte)stream.ReadByte();
+            BlockType = stream.ReadByte();
+            Metadata = stream.ReadByte();
         }
 
         public void Write(NetworkStream stream)
@@ -33,10 +33,10 @@ namespace mcsharpbot.communication.Packets.Types
             stream.WriteByte((byte)this.Type);
 
             StreamHelper.WriteInt(stream, this.X);
-            stream.WriteByte(this.Y);
+            stream.WriteByte((byte)this.Y);
             StreamHelper.WriteInt(stream, this.Z);
-            stream.WriteByte(this.BlockType);
-            stream.WriteByte(this.Metadata);
+            stream.WriteByte((byte)this.BlockType);
+            stream.WriteByte((byte)this.Metadata);
 
             stream.Flush();
         }
