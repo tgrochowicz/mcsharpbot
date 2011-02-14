@@ -239,7 +239,7 @@ namespace mcsharpbot.communication
                         playerPositionPacket.Read(Stream);
 
                         this.PlayerLocation.X = playerPositionPacket.X;
-                        this.PlayerLocation.Y = playerPositionPacket.Y;
+                        this.PlayerLocation.Y = playerPositionPacket.Y - 1.6200000047683716D;
                         this.PlayerLocation.Z = playerPositionPacket.Z;
                         this.PlayerLocation.Stance = playerPositionPacket.Stance;
                         this.SendPacket(playerPositionPacket);
@@ -261,7 +261,7 @@ namespace mcsharpbot.communication
                         playerLookMovePacket.Read(Stream);
 
                         this.PlayerLocation.X = playerLookMovePacket.X;
-                        this.PlayerLocation.Y = playerLookMovePacket.Y;
+                        this.PlayerLocation.Y = playerLookMovePacket.Y - 1.6200000047683716D;
                         this.PlayerLocation.Stance = playerLookMovePacket.Stance;
                         this.PlayerLocation.Z = playerLookMovePacket.Z;
                         this.PlayerRotation.Pitch = playerLookMovePacket.Pitch;
@@ -765,9 +765,9 @@ namespace mcsharpbot.communication
                 PlayerLookMove lookMove = new PlayerLookMove()
                 {
                     X = this.PlayerLocation.X,
-                    Y = this.PlayerLocation.Y - 1.6200000047683716D,
+                    Y = this.PlayerLocation.Y,
                     Z = this.PlayerLocation.Z,
-                    Stance = this.PlayerLocation.Y + 0.015625D,
+                    Stance = this.PlayerLocation.Y + 1.5D,
                     Pitch = this.PlayerRotation.Pitch,
                     Yaw = this.PlayerRotation.Yaw,
                     OnGround = true
@@ -781,9 +781,9 @@ namespace mcsharpbot.communication
                 PlayerPosition position = new PlayerPosition()
                 {
                     X = this.PlayerLocation.X,
-                    Y = this.PlayerLocation.Y - 1.6200000047683716D,
+                    Y = this.PlayerLocation.Y,
                     Z = this.PlayerLocation.Z,
-                    Stance = this.PlayerLocation.Y + 0.015625D,
+                    Stance = this.PlayerLocation.Y + 1.5D,
                     OnGround = true
                 };
                 this.SendPacket(position);
