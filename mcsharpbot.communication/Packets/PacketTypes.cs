@@ -24,6 +24,7 @@ namespace mcsharpbot.communication.Packets
         BlockDig =          0x0E,
         Place =             0x0F,
         BlockItemSwitch =   0x10,
+        Sleep =             0x11,
         ArmAnimation =      0x12,
         Action =            0x13,
         NamedEntitySpawn =  0x14,

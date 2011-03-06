@@ -2,60 +2,101 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using mcsharpbot.communication;
 
 namespace mcsharpbot.bots
 {
     public class MoveBot : MCBotBase
     {
+
+        communication.Entities.NamedEntityType capture;
+        System.Timers.Timer positionTimer;
+        System.Diagnostics.Stopwatch stopwatch;
+        DateTime start;
+        List<TimePositionLook> history;
+        int currentindex = 0;
+
         public override void BeginAction()
         {
             Connection.ChatMessageReceived += new communication.MCServerConnection.MinecraftClientChatEventHandler(Connection_ChatMessageReceived);
+            Connection.EntityChange += new MCServerConnection.MinecraftClientEntityChange(Connection_EntityChange);
+            stopwatch = new System.Diagnostics.Stopwatch();
+            positionTimer = new System.Timers.Timer();
+            positionTimer.Elapsed += new System.Timers.ElapsedEventHandler(positionTimer_Elapsed);
+            history = new List<TimePositionLook>();
             base.BeginAction();
+        }
+
+        void positionTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (currentindex < history.Count)
+            {
+                Connection.PlayerLocation.X = history[currentindex].X;
+                Connection.PlayerLocation.Y = history[currentindex].Y;
+                Connection.PlayerLocation.Z = history[currentindex].Z;
+                Connection.PlayerRotation.Pitch = history[currentindex].Pitch;
+                Connection.PlayerRotation.Yaw = history[currentindex].Yaw;
+                positionTimer.Stop();
+                positionTimer.Interval = history[currentindex++].time + 1;
+                positionTimer.Start();
+            }
+            else
+            {
+                positionTimer.Stop();
+            }
+        }
+
+        void Connection_EntityChange(communication.Entities.EntityType entity)
+        {
+            if (capture != null)
+            {
+                //Debug.Info(String.Format("Pitch: {0}, Yaw:{1}", entity.Pitch, entity.Yaw));
+                history.Add(new TimePositionLook()
+                {
+                    time = stopwatch.ElapsedMilliseconds,
+                    X = entity.X,
+                    Y = entity.Y,
+                    Z = entity.Z,
+                    ServerX = entity.ServerX,
+                    ServerY = entity.ServerY,
+                    ServerZ = entity.ServerZ,
+                    Pitch = entity.Pitch,
+                    Yaw = entity.Yaw
+                });
+                stopwatch.Restart();
+            }
         }
 
         void Connection_ChatMessageReceived(object sender, communication.MinecraftClientChatEventArgs args)
         {
             if (!args.User.Equals(Connection.Username))
             {
-                if (args.Message.Trim() == "move")
+                if (args.Message.Trim() == "start")
                 {
-                    Connection.PlayerLocation.X = 56.06956617524753D;
-                    Connection.PlayerLocation.Y = 65.0D;
-                    Connection.PlayerLocation.Z = 23.757122609011454D;
-                }
-                if (args.Message.Trim() == "movef")
-                {
-                    Connection.PlayerLocation.X = Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().X;
-                    Connection.PlayerLocation.Y = Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().Y;
-                    Connection.PlayerLocation.Z = Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().Z;
-                }
-                if (args.Message.Trim() == "location")
-                {
-                    mcsharpbot.communication.Packets.Types.Chat c = new communication.Packets.Types.Chat()
+                    if (capture != null)
                     {
-                        Message = String.Format("X: {0}, Y: {1}, Z: {2}", Connection.PlayerLocation.X, Connection.PlayerLocation.Y, Connection.PlayerLocation.Z)
-                    };
-                    Connection.SendPacket(c);
+                        Connection.SendChat("You cannot start a capture with one already running");
+                        return;
+                    }
+                    currentindex = 0;
+                    history.Clear();
+                    capture = (communication.Entities.NamedEntityType)Connection.GetServer().Entities.Entities.Where(e => (e.GetType() == typeof(communication.Entities.NamedEntityType)) && (((communication.Entities.NamedEntityType)e).Name == args.User)).First();
+                    Connection.SendChat("Starting capture on: " + args.User);
+                    start = DateTime.Now;
+                    stopwatch.Start();
                 }
-                if (args.Message.Trim() == "plocation")
+                if (args.Message.Trim() == "stop")
                 {
-                    mcsharpbot.communication.Packets.Types.Chat c = new communication.Packets.Types.Chat()
-                    {
-                        Message = String.Format("X: {0}, Y: {1}, Z: {2}", Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().X,
-                            Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().Y,
-                            Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().Z)
-                    };
-                    Connection.SendPacket(c);
+                    stopwatch.Stop();
+                    capture = null;
+                    Connection.SendChat("Stopping capture");
                 }
-                if (args.Message.Trim() == "plocations")
+                if (args.Message.Trim() == "replay")
                 {
-                    mcsharpbot.communication.Packets.Types.Chat c = new communication.Packets.Types.Chat()
-                    {
-                        Message = String.Format("X: {0}, Y: {1}, Z: {2}", Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().ServerX,
-                            Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().ServerY,
-                            Connection.GetServer().Entities.Entities.Where(e => e is mcsharpbot.communication.Entities.NamedEntityType).First().ServerZ)
-                    };
-                    Connection.SendPacket(c);
+                    Connection.SendChat("Replaying movements");
+                    currentindex = 0;
+                    positionTimer.Interval = 1;
+                    positionTimer.Start();
                 }
             }
         }
@@ -77,5 +118,17 @@ namespace mcsharpbot.bots
         }
 
 
+        public class TimePositionLook
+        {
+            public long time;
+            public double X;
+            public double Y;
+            public double Z;
+            public int ServerX;
+            public int ServerY;
+            public int ServerZ;
+            public float Yaw;
+            public float Pitch;
+        }
     }
 }

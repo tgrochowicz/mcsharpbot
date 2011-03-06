@@ -100,6 +100,7 @@ namespace mcsharpbot.ui
 
             returnable.Add(new SimpleBot());
             returnable.Add(new MoveBot());
+            returnable.Add(new FollowBot());
 
             return returnable;
         }

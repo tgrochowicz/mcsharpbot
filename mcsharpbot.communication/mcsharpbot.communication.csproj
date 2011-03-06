@@ -108,6 +108,7 @@
     <Compile Include="Packets\Types\Quit.cs" />
     <Compile Include="Packets\Types\Respawn.cs" />
     <Compile Include="Packets\Types\Sign.cs" />
+    <Compile Include="Packets\Types\Sleep.cs" />
     <Compile Include="Packets\Types\SpawnPosition.cs" />
     <Compile Include="Packets\Types\Status.cs" />
     <Compile Include="Packets\Types\UpdateTime.cs" />

@@ -94,10 +94,12 @@ namespace mcsharpbot.communication
         public delegate void MinecraftClientChatEventHandler(object sender, MinecraftClientChatEventArgs args);
         public delegate void MinecraftClientLocationEventHandler(object sender, MinecraftClientLocationEventArgs args);
         public delegate void MinecraftClientPacketTransmission(object sender, IPacket packet);
+        public delegate void MinecraftClientEntityChange(Entities.EntityType entity);
         public event MinecraftClientConnectEventHandler ConnectedToServer, DisconnectedFromServer;
         public event MinecraftClientChatEventHandler ChatMessageReceived;
         public event MinecraftClientLocationEventHandler PlayerLocationChanged;
         public event MinecraftClientPacketTransmission PacketReceived, PacketSent;
+        public event MinecraftClientEntityChange EntityChange;
 
         public Thread DataThread;
         private bool disposed = false;
@@ -293,6 +295,11 @@ namespace mcsharpbot.communication
                         blockItemSwitchPacket.Read(Stream);
                         OnPacketReceived(this, blockItemSwitchPacket);
                         break;
+                    case PacketType.Sleep:
+                        Sleep sleepPacket = new Sleep();
+                        sleepPacket.Read(Stream);
+                        OnPacketReceived(this, sleepPacket);
+                        break;
                     case PacketType.ArmAnimation:
                         ArmAnimation armAnimationPacket = new ArmAnimation();
                         armAnimationPacket.Read(Stream);
@@ -430,6 +437,7 @@ namespace mcsharpbot.communication
                         double entityPositionZ = (double)(entityPositonEntity.ServerZ) / 32D;
                         entityPositonEntity.SetPosition(entityPositionX, entityPositionY, entityPositionZ);
 
+                        OnEntityChanged(entityPositonEntity);
                         OnPacketReceived(this, entityPositionPacket);
                         break;
                     case PacketType.EntityLook:
@@ -438,9 +446,10 @@ namespace mcsharpbot.communication
 
                         EntityType entityLookEntity = this.Server.Entities.GetFromId(entityLookPacket.EntityID);
                         if (entityLookEntity == null) break;
-                        entityLookEntity.Pitch = (float)(entityLookPacket.Pitch * 360) / 256F;
-                        entityLookEntity.Yaw = (float)(entityLookPacket.Yaw * 360) / 256F;
-
+                        entityLookEntity.Pitch += (float)(entityLookPacket.Pitch * 360) / 256F;
+                        entityLookEntity.Yaw += (float)(entityLookPacket.Yaw * 360) / 256F;
+                        Debug.Info(String.Format("Pitch: {0}, Yaw:{1}; Packet Pitch: {2}, Yaw: {3}", entityLookEntity.Pitch, entityLookEntity.Yaw, entityLookPacket.Pitch, entityLookPacket.Yaw));
+                        OnEntityChanged(entityLookEntity);
                         OnPacketReceived(this, entityLookPacket);
                         break;
                     case PacketType.EntityLookMove:
@@ -460,6 +469,8 @@ namespace mcsharpbot.communication
                         double entityLookMoveZ = (double)(entityLookMoveEntity.ServerZ) / 32D;
                         entityLookMoveEntity.SetPosition(entityLookMoveX, entityLookMoveY, entityLookMoveZ);
 
+                        Debug.Info(String.Format("Pitch: {0}, Yaw:{1}; Packet Pitch: {2}, Yaw: {3}", entityLookMoveEntity.Pitch, entityLookMoveEntity.Yaw, entityLookMovePacket.Pitch, entityLookMovePacket.Yaw));
+                        OnEntityChanged(entityLookMoveEntity);
                         OnPacketReceived(this, entityLookMovePacket);
                         break;
                     case PacketType.EntityTeleport:
@@ -653,7 +664,7 @@ namespace mcsharpbot.communication
                 //login (client)
                 Packets.Types.Login clientLogin = new Packets.Types.Login()
                 {
-                    Version = 8,
+                    Version = 9,
                     Username = this.Username,
                     ServerPassword = this.Server.Password,
                     MapSeed = 0L,
@@ -731,6 +742,14 @@ namespace mcsharpbot.communication
             if (PlayerLocationChanged != null)
             {
                 PlayerLocationChanged(sender, args);
+            }
+        }
+
+        protected void OnEntityChanged(Entities.EntityType entity)
+        {
+            if (EntityChange != null)
+            {
+                EntityChange(entity);
             }
         }
 
@@ -817,6 +836,25 @@ namespace mcsharpbot.communication
         {
             packet.Write(Stream);
             OnPacketSent(this, packet);
+        }
+
+        public void SendChat(string message)
+        {
+            this.SendPacket(new Chat() { Message = message });
+        }
+
+        public void Disconnect()
+        {
+            this.Disconnect("");
+        }
+
+        public void Disconnect(string reason)
+        {
+            Quit quit = new Quit()
+            {
+                Reason = reason
+            };
+            this.SendPacket(quit);
         }
 
         public void ProcessChunk(int X, int Y, int Z, int XSize, int YSize, int ZSize, byte[] Chunk)

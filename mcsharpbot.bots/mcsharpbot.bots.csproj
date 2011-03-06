@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FollowBot.cs" />
     <Compile Include="MCBotBase.cs" />
     <Compile Include="MoveBot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
