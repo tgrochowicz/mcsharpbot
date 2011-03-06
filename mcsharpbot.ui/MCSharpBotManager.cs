@@ -109,6 +109,9 @@ namespace mcsharpbot.ui
         {
             bot = (MCBotBase)cmbBotTypes.SelectedValue;
 
+            //Clear previous properties
+            tlpBotSettings.Controls.Clear();
+
             //Populate Properties
             var y = from x in bot.GetType().GetProperties()
                     select x;
@@ -122,25 +125,25 @@ namespace mcsharpbot.ui
                     UserEditableAttribute edit = (UserEditableAttribute)attrib[0];
                     Label l = new Label { Text = edit.Name };
                     l.Dock = DockStyle.Fill;
-                    tlpBotProperties.Controls.Add(l, 0, rows);
+                    tlpBotSettings.Controls.Add(l, 0, rows);
                     if (prop.PropertyType.Name == "Boolean")
                     {
                         CheckBox cb = new CheckBox();
                         cb.Checked = (bool)prop.GetValue(bot, null);
-                        tlpBotProperties.Controls.Add(cb, 1, rows);
+                        tlpBotSettings.Controls.Add(cb, 1, rows);
                     }
                     else if (prop.PropertyType.Name == "String")
                     {
                         TextBox tb = new TextBox();
                         tb.Text = (string)prop.GetValue(bot, null);
-                        tlpBotProperties.Controls.Add(tb, 1, rows);
+                        tlpBotSettings.Controls.Add(tb, 1, rows);
                     }
                     else if (prop.PropertyType.BaseType.Name == "Enum")
                     {
                         ComboBox cmb = new ComboBox();
                         foreach (var x in Enum.GetValues(prop.PropertyType))
                             cmb.Items.Add(x);
-                        tlpBotProperties.Controls.Add(cmb, 1, rows);
+                        tlpBotSettings.Controls.Add(cmb, 1, rows);
                     }
                     rows++;
                 }
