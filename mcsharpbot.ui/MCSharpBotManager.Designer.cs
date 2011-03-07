@@ -37,7 +37,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cbRemember = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -53,6 +52,7 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.lblBotDescription = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -72,7 +72,7 @@
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(77, 45);
+            this.txtPassword.Location = new System.Drawing.Point(238, 20);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(100, 20);
             this.txtPassword.TabIndex = 1;
@@ -80,22 +80,22 @@
             // 
             // txtServerAddress
             // 
-            this.txtServerAddress.Location = new System.Drawing.Point(357, 18);
+            this.txtServerAddress.Location = new System.Drawing.Point(421, 21);
             this.txtServerAddress.Name = "txtServerAddress";
             this.txtServerAddress.Size = new System.Drawing.Size(100, 20);
             this.txtServerAddress.TabIndex = 2;
             // 
             // txtServerPort
             // 
-            this.txtServerPort.Location = new System.Drawing.Point(357, 44);
+            this.txtServerPort.Location = new System.Drawing.Point(543, 21);
             this.txtServerPort.Name = "txtServerPort";
-            this.txtServerPort.Size = new System.Drawing.Size(100, 20);
+            this.txtServerPort.Size = new System.Drawing.Size(38, 20);
             this.txtServerPort.TabIndex = 3;
             this.txtServerPort.Text = "25565";
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(547, 12);
+            this.btnStart.Location = new System.Drawing.Point(599, 32);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
             this.btnStart.TabIndex = 4;
@@ -106,7 +106,7 @@
             // btnStop
             // 
             this.btnStop.Enabled = false;
-            this.btnStop.Location = new System.Drawing.Point(547, 65);
+            this.btnStop.Location = new System.Drawing.Point(682, 33);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(75, 23);
             this.btnStop.TabIndex = 5;
@@ -126,7 +126,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(17, 47);
+            this.label2.Location = new System.Drawing.Point(184, 23);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(53, 13);
             this.label2.TabIndex = 7;
@@ -135,27 +135,16 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(272, 21);
+            this.label3.Location = new System.Drawing.Point(344, 23);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(79, 13);
             this.label3.TabIndex = 8;
             this.label3.Text = "Server Address";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(272, 49);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(60, 13);
-            this.label4.TabIndex = 9;
-            this.label4.Text = "Server Port";
-            // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.cbRemember);
-            this.groupBox1.Controls.Add(this.checkBox1);
+            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.txtUserName);
-            this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.txtPassword);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.txtServerAddress);
@@ -164,7 +153,7 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(532, 89);
+            this.groupBox1.Size = new System.Drawing.Size(762, 55);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Server Information";
@@ -172,7 +161,7 @@
             // cbRemember
             // 
             this.cbRemember.AutoSize = true;
-            this.cbRemember.Location = new System.Drawing.Point(444, 0);
+            this.cbRemember.Location = new System.Drawing.Point(516, 59);
             this.cbRemember.Name = "cbRemember";
             this.cbRemember.Size = new System.Drawing.Size(77, 17);
             this.cbRemember.TabIndex = 14;
@@ -182,7 +171,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(275, 66);
+            this.checkBox1.Location = new System.Drawing.Point(416, 59);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(94, 17);
             this.checkBox1.TabIndex = 10;
@@ -192,7 +181,7 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.tlpBotSettings);
-            this.groupBox2.Location = new System.Drawing.Point(12, 154);
+            this.groupBox2.Location = new System.Drawing.Point(12, 126);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(378, 118);
             this.groupBox2.TabIndex = 11;
@@ -217,9 +206,9 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.tableLayoutPanel1);
-            this.groupBox3.Location = new System.Drawing.Point(12, 101);
+            this.groupBox3.Location = new System.Drawing.Point(12, 73);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(759, 47);
+            this.groupBox3.Size = new System.Drawing.Size(762, 47);
             this.groupBox3.TabIndex = 12;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Bot Type";
@@ -231,14 +220,14 @@
             this.cmbBotTypes.FormattingEnabled = true;
             this.cmbBotTypes.Location = new System.Drawing.Point(3, 3);
             this.cmbBotTypes.Name = "cmbBotTypes";
-            this.cmbBotTypes.Size = new System.Drawing.Size(225, 21);
+            this.cmbBotTypes.Size = new System.Drawing.Size(226, 21);
             this.cmbBotTypes.TabIndex = 0;
             this.cmbBotTypes.SelectedIndexChanged += new System.EventHandler(this.cmbBotTypes_SelectedIndexChanged);
             // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.lbFeedback);
-            this.groupBox4.Location = new System.Drawing.Point(15, 278);
+            this.groupBox4.Location = new System.Drawing.Point(15, 250);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(375, 150);
             this.groupBox4.TabIndex = 13;
@@ -257,7 +246,7 @@
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.tlbBotCommands);
-            this.groupBox5.Location = new System.Drawing.Point(396, 154);
+            this.groupBox5.Location = new System.Drawing.Point(396, 126);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(378, 118);
             this.groupBox5.TabIndex = 14;
@@ -292,7 +281,7 @@
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.pbMap);
-            this.groupBox6.Location = new System.Drawing.Point(399, 281);
+            this.groupBox6.Location = new System.Drawing.Point(399, 253);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(375, 147);
             this.groupBox6.TabIndex = 16;
@@ -311,32 +300,43 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(753, 28);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(756, 28);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // lblBotDescription
             // 
             this.lblBotDescription.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblBotDescription.AutoSize = true;
-            this.lblBotDescription.Location = new System.Drawing.Point(234, 7);
+            this.lblBotDescription.Location = new System.Drawing.Point(235, 7);
             this.lblBotDescription.Name = "lblBotDescription";
             this.lblBotDescription.Size = new System.Drawing.Size(90, 13);
             this.lblBotDescription.TabIndex = 1;
             this.lblBotDescription.Text = "Description of bot";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(527, 24);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(10, 13);
+            this.label5.TabIndex = 15;
+            this.label5.Text = ":";
+            // 
             // MCSharpBotManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(785, 440);
+            this.ClientSize = new System.Drawing.Size(786, 407);
             this.Controls.Add(this.groupBox6);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.cbRemember);
             this.Controls.Add(this.groupBox5);
+            this.Controls.Add(this.btnStop);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.btnStart);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.btnStop);
-            this.Controls.Add(this.btnStart);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "MCSharpBotManager";
@@ -354,6 +354,7 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -368,7 +369,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -384,5 +384,6 @@
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label lblBotDescription;
+        private System.Windows.Forms.Label label5;
     }
 }
