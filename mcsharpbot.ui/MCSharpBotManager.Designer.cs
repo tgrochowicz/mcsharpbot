@@ -193,8 +193,8 @@
             this.tlpBotSettings.AutoScroll = true;
             this.tlpBotSettings.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tlpBotSettings.ColumnCount = 2;
-            this.tlpBotSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpBotSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 184F));
+            this.tlpBotSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpBotSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpBotSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpBotSettings.Location = new System.Drawing.Point(3, 16);
             this.tlpBotSettings.Name = "tlpBotSettings";
@@ -266,15 +266,13 @@
             // 
             this.tlbBotCommands.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tlbBotCommands.ColumnCount = 2;
-            this.tlbBotCommands.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlbBotCommands.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 201F));
-            this.tlbBotCommands.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tlbBotCommands.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlbBotCommands.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlbBotCommands.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlbBotCommands.Location = new System.Drawing.Point(3, 16);
             this.tlbBotCommands.Name = "tlbBotCommands";
             this.tlbBotCommands.RowCount = 1;
             this.tlbBotCommands.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlbBotCommands.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tlbBotCommands.Size = new System.Drawing.Size(372, 99);
             this.tlbBotCommands.TabIndex = 0;
             // 
